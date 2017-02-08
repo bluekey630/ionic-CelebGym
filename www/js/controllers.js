@@ -14,7 +14,9 @@ angular.module('starter.controllers', [])
   // Form data for the login modal
   $rootScope.loginData = {fname:"",lname:"",weight:"",age:"",gender:"female",color:"#00a6f5", image:"img/1fb-01.png"};
   $rootScope.menucolor="black";//come and change to white later
-
+  //backend server url
+  $rootScope.url = "http://192.168.0.125:3000/";
+  $rootScope.bLoginStatus = false;
   // Create the login modal that we will use later
 
 
@@ -93,8 +95,64 @@ angular.module('starter.controllers', [])
 
 //Login Controller -Input Login Details Screen
 
-.controller('LoginCtrl', function($scope, $state, $ionicHistory) {
+.controller('LoginCtrl', function($scope, $state, $rootScope, $ionicHistory, $http, $ionicPopup) {
 
+  $scope.confirm = function(){
+     
+    var bLoginStatus = false,
+        email = $rootScope.loginData.email,
+        pwd = $rootScope.loginData.password;
+
+    if (email != undefined && pwd != undefined) {
+      
+      var savedUser = window.localStorage.getItem(email);
+      if (savedUser != undefined) {
+      
+        //confirm user information on localstorage.
+          savedUser = JSON.parse(savedUser);
+          var sEmail = savedUser.email,
+              sPwd = savedUser.password;
+          if(sEmail === email && pwd === sPwd){
+             $rootScope.bLoginStatus = true; 
+          }  
+          //console.log(window.localStorage.getItem(email));
+                   
+          ($rootScope.bLoginStatus) ? $scope.gotobrowse() : $scope.signinonserver($rootScope.loginData);
+      } else {
+        // confirm user information on server
+        $scope.signinonserver($rootScope.loginData);
+      }
+    }
+   
+  };
+
+
+  $scope.saveuseronlocalstorage = function(data) {
+      
+      window.localStorage.setItem(data.email,JSON.stringify(data));
+  
+  };
+
+  $scope.signinonserver = function(user) {
+   
+     var data = {'email' : user.email, 'password' : user.pwd};
+     $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {
+     
+          var msg = res.data.msg;
+      //      console.log(user.msg);
+            
+          if(msg == 'success') {
+              $rootScope.bLoginStatus = true; 
+              $scope.saveuseronlocalstorage(user);
+              $scope.gotobrowse();
+
+          } else {
+
+              $scope.confirmAlert(msg);
+
+          };
+     });
+  };
 
   $scope.gotobrowse = function() {
 
@@ -103,23 +161,116 @@ angular.module('starter.controllers', [])
           historyRoot: true
         });//how to eliminate back button
 
-
-
-      $state.go('app.browse');
+        $state.go('app.browse');
   };
 
    $scope.gotosignup = function() {
       $state.go('app.signupscreen');
   };
 
+  $scope.confirmAlert = function(msg){
+       var alertPopup = $ionicPopup.alert({
+        cssClass: 'myPopup',
+         template: msg,
+         okText: 'RETRY', // String (default: 'OK'). The text of the OK button.
+         okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
+       });
+
+       alertPopup.then(function(res) {
+         console.log('Thank you for not eating my delicious ice cream cone');
+       });  
+  }
 
 })
 
 
 //Sign Up Controller -Sign Up Screen
 
-.controller('SignUpCtrl', function($scope, $state) {
+.controller('SignUpCtrl', function($scope, $ionicPlatform, $state, $rootScope, $ionicPopup, $http) {
 
+  $scope.registeuser = function() {
+      var obj = $rootScope.loginData,
+          email = $rootScope.loginData.email,
+          pwd = $rootScope.loginData.password, 
+          repwd = $rootScope.loginData.repassword;
+
+      if (email != undefined && pwd != undefined && pwd == repwd){
+          var tmpUser = window.localStorage.getItem(email);
+          if(tmpUser != null){
+            
+            //confirm user on backend server
+            // register on server
+             //method post , url : users, data:obj
+
+            if(tmpUser.email === email) {
+                $scope.confirmAlert("This Email have already registered.");
+            } else {
+
+                $scope.signuponserver(obj);
+            }
+
+            // // register user info on localstrage
+            // obj.email = email;
+            // obj.password=pwd;
+
+            // window.localStorage.setItem(email,JSON.stringify(obj));
+   //         console.log(window.localStorage.getItem(email));
+          } else {
+
+              $scope.signuponserver(obj);
+          }
+
+          //$scope.gotomain();
+      }else{
+        if(email == undefined) 
+          $scope.confirmAlert("Empty Email Address.");
+        else if(pwd == undefined)
+          $scope.confirmAlert("Empty Password.");
+        else if(repwd == undefined)
+          $scope.confirmAlert("Empty Confirm Password.");
+        else if(pwd != repwd)
+          $scope.confirmAlert("Password is wrong.");
+
+      }
+  };
+
+  $scope.signuponserver = function(user) {
+   
+     var data = {'email' : user.email, 'password' : user.pwd};
+
+     $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {
+     
+          var msg = res.data.msg;
+          if(msg == 'success') {
+
+            $scope.confirmAlert("This Email have already registered.");
+              
+          } else {
+
+              $http.post($rootScope.url + 'users',  user).then(function (res) {
+     
+                var msg = res.data.msg;
+      
+                if(msg == 'success') {
+                  $rootScope.bLoginStatus = true; 
+                  $scope.saveuseronlocalstorage(user);
+                  $scope.gotomain();
+
+                } else {
+
+                  $scope.confirmAlert(msg);
+
+                }
+              });
+          }
+     });     
+  };
+
+  $scope.saveuseronlocalstorage = function(data) {
+      
+      window.localStorage.setItem(data.email,JSON.stringify(data));
+  
+  };
 
   $scope.gotomain = function() {
       $state.go('app.main');
@@ -129,6 +280,18 @@ angular.module('starter.controllers', [])
       $state.go('app.signupscreen');
   };
 
+  $scope.confirmAlert = function(msg){
+       var alertPopup = $ionicPopup.alert({
+        cssClass: 'myPopup',
+         template: msg,
+         okText: 'RETRY', // String (default: 'OK'). The text of the OK button.
+         okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
+       });
+
+       alertPopup.then(function(res) {
+         console.log('Thank you for not eating my delicious ice cream cone');
+       });  
+  }
 
 })
 
