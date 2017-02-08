@@ -1,0 +1,281 @@
+<ion-view cache-view="true" style="background-color:black;"><!--THIS IS THE MALE WORKOUTS PAGE AFTER THE TWO BUTTONS PAGE-->
+  <ion-content style="background-color:black;color:white;">
+ <!--  {{ctrlCheck}} -->
+<!--  THISI SHER
+ {{roundthis | number:0}}<br> -->
+<!--  Malesmoves index break METs equal {{malemoves[0].cal}}<p>
+Weight is {{loginData.weight}}<p>
+The calories of the workout are {{tcal}}<br>Total METs are {{tmet}}<br>
+The Total Time of the workout is {{ttime/60}}<br><br><br>
+<div ng-click="additup(mwd.w1.hard);" style="width:20%;border:2px solid black;height:40px;">Add it up</div>
+
+ This is the price {{mwd.w1.easy[4].time+mwd.w1.easy[4].time}}<br><br><br><br>
+
+
+{{dater | date:'MM-dd-yyyy'}}/{{monthly}}/{{day}}/{{sdater}}/{{stringer}}<br>{{testfilter}} -->
+
+
+<div  style="border:0px solid blue;width:101%;margin-bottom:0px;height:200px;margin-top:-1%;">
+    
+
+  <ion-slide-box does-continue="true" slide-interval="3000" show-pager="true" auto-play="true" on-slide-changed="slideHasChanged($index)" style="width:100%;height:200px;border:0px solid black;">  
+
+
+    <ion-slide ng-click="pick(mwd.w2);choosen(choice.easy);bubble(choice.easyinfo);">
+    <a href="#/app/details">
+      <img src="img/mfeat3-01.svg" style="width:45%;border:0px solid black;position:absolute;"/>
+      <div style="color:yellow;font-size:15px;">
+        <img src="img/men2.png" style="width:100%;height:200px;border:0px solid red;top:0px;"/>
+      </div>
+    </a>
+    </ion-slide>
+
+
+    <ion-slide ng-click="pick(mwd.w1);choosen(choice.easy);bubble(choice.easyinfo);">
+    <a href="#/app/details">
+      <img src="img/mfeat3-01.svg" style="width:45%;border:0px solid black;position:absolute;"/>
+      <div style="color:yellow;font-size:15px;">
+        <img src="img/men1.png" style="width:100%;height:200px;border:0px solid red;top:0px;"/>
+      </div>
+    </a>
+    </ion-slide>
+
+    <ion-slide ng-click="pick(mwd.w7);choosen(choice.easy);bubble(choice.easyinfo);">
+    <a href="#/app/details">
+      <img src="img/mfeat3-01.svg" style="width:45%;border:0px solid black;position:absolute;"/>
+      <div style="color:yellow;font-size:15px;">
+        <img src="img/men7.png" style="width:100%;height:200px;border:0px solid red;top:0px;"/>
+      </div>
+    </a>
+    </ion-slide>
+    </ion-slide-box>
+</div>
+
+
+
+<!-- {{9 | timeconvert}} -->
+
+
+
+
+
+<div ng-repeat="workout in maleworkouts | limitTo : 6 : 0" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo)">
+      
+      <a href="#/app/details" style="border:0px solid #e4e4e4;">
+        <div class="list">
+
+            <a class="item item-thumbnail-left" href="#/app/details" style="border:1px solid rgba(255,255,255,0.25);background-color:black;color:white;">
+              <img src="{{workout.image}}" style="height:70%;border:0px solid black;color:white;">
+              <h2 style="color:#D9B44E;">{{workout.title}}&nbsp;&nbsp;<img src="img/lock2-01.svg" style="width:17px;height:17px;border:0px solid white;float:right;"/></h2>
+              <p style="color:white;">{{workout.type}}</p>
+              <p style="text-align:right;color:white;"><img src="img/flame-01.svg">&nbsp;&nbsp;{{workout.caloriesmain}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/clock-01.svg" style="padding-top:10px;">&nbsp;&nbsp;{{workout.time || ordinal}}</p>
+            </a>
+        </div>
+
+    </a>
+</div>
+
+
+
+
+
+<!-- 
+OLD LOOKING LIST 
+
+
+
+
+<div style="margin-bottom:20px;border:0px solid black;">
+
+    <div ng-repeat="workout in maleworkouts | limitTo : 6 : 0" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo)">
+      
+      <a href="#/app/details" style="border:0px solid #e4e4e4;">
+
+      <div style="width:96%;border:0px solid white;border-radius:15px;background-color:#ffffff;margin-left:2%;margin-rigth:2%;margin-top:2%;margin-bottom:4%;min-height:80px;box-shadow: 1px 3px 10px #d1cfcf;">
+      
+        <img src="{{workout.image}}" style="border:0px solid black;width:24%;height:50px;margin-left:5%;margin-top:2%;float:left;border-radius:10px;"/>
+        <div style="width:59%;border:0px solid black;height:100%;float:left;margin-left:6%;margin-top:3%;">
+          <h2 style="font-size:16px;margin-bottom:-5%;font-family:BebasNeue">{{workout.title}}</h2>
+          <h2 style="font-size:12px;color:#989898;font-family:Geo;">{{workout.type}}</h2>
+          <div style="width:80%;margin-top:-3%;margin-left:auto;border:0px solid white;font-size:13px;font-family:BebasNeue,Impact;">
+            <div style="border:0px solid yellow;width:40%;float:right;margin-left:-5%;">
+              <img src="img/flame-01.svg" style="float:left;margin-top:5%;padding-right:5%;width:15px;"><div style="margin-top:0%;float:left;">{{workout.caloriesmain}} Cals</div>
+            </div>
+            <div style="border:0px solid yellow;width:50%;float:right;margin-left:-5%;">
+              <img src="img/clock-01.svg" style="float:left;margin-top:5%;padding-right:5%;width:15px;"><div style="margin-top:0%;float:left;">{{workout.time}} Mins</div>
+            </div>
+
+          </div>
+        </div>
+      
+      </div>
+    </a>
+    </div>
+  </div>
+
+ -->
+
+
+
+<!--RECENTALY ADDED SECTION-->
+<div style="width:100%;height:160px;border:0px solid black;">
+
+
+<div style="width:50%;border:0px solid green;float:right;height:160px;background-image:url(img/historysmall3-01.jpg);background-size:100% 100%;">
+    <p style="font-family:BebasNeue;font-size:45px;color:white;margin-left:5%;padding-top:10px;text-align:left;">
+      <br>Recently<br><br> Added
+    </p>
+
+  </div>
+
+<div style="width:50%;height:160px;float:right;border:0px solid red;">
+    <ion-slide-box does-continue="true" show-pager="false" auto-play="true" on-slide-changed="slideHasChanged($index)" style="width:100%;height:160px;border:0px solid black;">
+    
+    <ion-slide ng-click="pick(mwd.w7);choosen(choice.easy);bubble(choice.easyinfo);">
+    <a href="#/app/details">
+      <div style="color:yellow;font-size:15px;">
+        <img src="img/men7.png" style="width:100%;height:145px;"/>
+        <div style="width:100%;height:20px;background-color:black;color:white;margin-top:-5%;position:absolute;font-family:BebasNeue;text-align:center;font-size:14px;">
+        </div>
+      </div>
+    </a>
+    </ion-slide>
+    <ion-slide ng-click="pick(mwd.w11);choosen(choice.easy);bubble(choice.easyinfo);">
+    <a href="#/app/details">
+      <div style="color:yellow;font-size:15px;">
+        <img src="img/men11.png" style="width:100%;height:145px;"/>
+        <div style="width:100%;height:20px;background-color:black;color:white;margin-top:-5%;position:absolute;font-family:BebasNeue;text-align:center;font-size:14px;">
+        </div>
+      </div>
+    </a>
+    </ion-slide>
+    <ion-slide ng-click="pick(mwd.w5);choosen(choice.easy);bubble(choice.easyinfo);">
+    <a href="#/app/details">
+      <div style="color:yellow;font-size:15px;">
+        <img src="img/men5.png" style="width:100%;height:145px;"/>
+        <div style="width:100%;height:20px;background-color:black;color:white;margin-top:-5%;position:absolute;font-family:BebasNeue;text-align:center;font-size:14px;">
+        </div>
+      </div>
+    </a>
+    </ion-slide>
+    </ion-slide-box>
+</div>
+
+</div>
+
+
+
+
+
+
+
+<div ng-repeat="workout in maleworkouts | limitTo : 5 : 6" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo)">
+      
+      <a href="#/app/details" style="border:0px solid #e4e4e4;">
+        <div class="list">
+
+            <a class="item item-thumbnail-left" href="#/app/details" style="border:1px solid rgba(255,255,255,0.25);background-color:black;color:white;">
+              <img src="{{workout.image}}" style="height:70%;border:0px solid black;color:white;">
+              <h2 style="color:white;">{{workout.title}}</h2>
+              <p style="color:white;">{{workout.type}}</p>
+              <p style="text-align:right;color:white;"><img src="img/flame-01.svg">&nbsp;&nbsp;{{workout.caloriesmain}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/clock-01.svg" style="padding-top:10px;">&nbsp;&nbsp;{{workout.time}}</p>
+            </a>
+        </div>
+
+    </a>
+</div>
+
+
+
+
+
+
+<!-- 
+  OLD LOOKING LIST BOTTOM SECTION
+
+
+
+<div style="margin-bottom:40px;margin-top:20px;border:0px solid black;">
+
+    <div ng-repeat="workout in maleworkouts | limitTo : 5 : 6" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo)">
+      
+      <a href="#/app/details" style="border:0px solid #e4e4e4;">
+
+      <div style="width:96%;border:0px solid white;border-radius:15px;background-color:#ffffff;margin-left:2%;margin-rigth:2%;margin-top:2%;margin-bottom:4%;min-height:80px;box-shadow: 1px 3px 10px #d1cfcf;">
+      
+        <img src="{{workout.image}}" style="border:0px solid black;width:24%;height:50px;margin-left:5%;margin-top:2%;float:left;border-radius:10px;"/>
+        <div style="width:59%;border:0px solid black;height:100%;float:left;margin-left:6%;margin-top:3%;">
+          <h2 style="font-size:16px;margin-bottom:-5%;font-family:BebasNeue">{{workout.title}}</h2>
+          <h2 style="font-size:12px;color:#989898;font-family:Geo;">{{workout.type}}</h2>
+          <div style="width:80%;margin-top:-3%;margin-left:auto;border:0px solid white;font-size:13px;font-family:BebasNeue,Impact;">
+            <div style="border:0px solid yellow;width:40%;float:right;margin-left:-5%;">
+              <img src="img/flame-01.svg" style="float:left;margin-top:5%;padding-right:5%;width:15px;"><div style="margin-top:0%;float:left;">{{workout.caloriesmain}} Cals</div>
+            </div>
+            <div style="border:0px solid yellow;width:50%;float:right;margin-left:-5%;">
+              <img src="img/clock-01.svg" style="float:left;margin-top:5%;padding-right:5%;width:15px;"><div style="margin-top:0%;float:left;">{{workout.time}} Mins</div>
+            </div>
+
+          </div>
+          </div>
+        </div>
+      
+      </div>
+    </a>
+    </div>
+  </div>
+
+ -->
+
+<!--MOST POPULAR SECTION -->
+  <div id="mostpopular" style="width:100%;height:255px;border:0px solid black;background-color:black;margin-top:3%;">
+      <div style="border:0px solid red;">
+        <div style="width:62%;height:150px;float:left;border:0px solid black;display:inline-block;margin-left:10px;margin-right:10px;margin-top:10px;color:white;background-image:url(img/historysmall3-01.jpg);background-size:100% 100%;font-family:BebasNeue;font-size:45px;text-align:right;">
+          <p style="margin-right:5%;"><br><br>Most<br><br> Popular</p>
+        </div>
+        <a href="#/app/details">
+        <div style="width:30%;height:70px;border:0px solid black;display:inline-block;margin-top:10px;">
+          <img ng-click="pick(mwd.w1);choosen(choice.easy);bubble(choice.easyinfo);" src="img/men1.png" style="width:100%;height:100%;"/>
+        </div>
+        </a>
+        <a href="#/app/details">
+        <div style="width:30%;height:70px;border:0px solid black;display:inline-block;margin-top:5px;">
+          <img ng-click="pick(mwd.w2);choosen(choice.easy);bubble(choice.easyinfo);" src="img/men2.png" style="width:100%;height:100%;"/>
+        </div>
+        </a>
+        <a href="#/app/details">
+        <div style="width:30%;height:70px;border:0px solid black;display:inline-block;margin-top:10px;margin-left:10px;">
+          <img ng-click="pick(mwd.w5);choosen(choice.easy);bubble(choice.easyinfo);" src="img/men5.png" style="width:100%;height:100%;"/>
+        </div>
+        </a>
+        <a href="#/app/details">
+        <div style="width:30%;height:70px;border:0px solid black;display:inline-block;margin-top:10px;margin-left:5px;">
+          <img ng-click="pick(mwd.w7);choosen(choice.easy);bubble(choice.easyinfo);" src="img/men7.png" style="width:100%;height:100%;"/>
+        </div>
+        </a>
+        <a href="#/app/details">
+        <div style="width:30%;height:70px;border:0px solid black;display:inline-block;margin-top:10px;margin-left:5px;">
+          <img ng-click="pick(mwd.w8);choosen(choice.easy);bubble(choice.easyinfo);" src="img/men8.png" style="width:100%;height:100%;"/>
+        </div>
+        </a>
+      </div>
+  </div>
+
+
+<div style="height:10px;widht:100%;border-bottom:0px solid white;text-align:center;margin-top:20px;background-color:black;">
+
+</div>
+
+
+
+
+<div style="width:90%;margin-left:5%;border:0px solid white;margin-top:0px;margin-bottom:10px;color:white;font-size:10px;text-align:center;background-color:black;">
+  Disclamer: Do not attempt any workout without first consulting your physician. If at any time you feel over-exerted, stop the workout, rest and have some water. All workouts have been adapted to be suitable to for at home excercises. Calories burned are only an estimate <br>
+
+</div>
+
+<div style="width:100%;border:0px solid black;height:10px;color:grey;font-size:10px;text-align:center;">
+
+</div>
+
+  </ion-content>
+</ion-view>

@@ -1,0 +1,308 @@
+<ion-view hide-nav-bar="false" can-swipe-back="false" view-title="" style="background-image:url(img/historyback.jpg);background-size:cover;">
+<!--   <ion-nav-title>
+   <p style="font-family:BebasNeue;font-size:22px;color:white;">History</p>
+   {{holdpls}}<p>{{historworkouts}}
+    <!-- <img class="toplogo" src="img/whitelogoshadow-01.svg">
+  </ion-nav-title> -->
+
+  <ion-content>
+<!--   {{historyworkouts}} -->
+
+<!-- <div> -->
+
+
+<div style="border:0px solid black;"><!-- background-image:url(img/greenback2-01.svg) -->
+<!--   <div class="animatedlong fadeIn" style="background-color:rgba(255,255,255,0.5);width:100%;height:5%;border:0px solid black;font-size:38px;font-family:BebasNeue;color:white;margin-top:10px;">
+    <div class="row" style="border:0px solid red;">
+ <div class="col col-80" style="border:0px solid red;">
+        History
+      </div> 
+      <div class="col col-30" style="margin-left:-7%;border:0px solid red;" ng-click="clearnow()"> 
+        <img src="img/clearbtn-01.svg" style="width:100%;vertical-align:middle;"/>
+      </div>
+      <div class="col col-30" style="margin-left:-7%;border:2px solid red;" ng-click="toPushMore()"> 
+        <img src="img/clearbtn-01.svg" style="width:100%;vertical-align:middle;"/>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="row" style="background-color:rgba(0,0,0,0.85);margin-bottom:-8%;">
+    <div class="col-67" style="padding-left:10px;font-size:14px;border:0px solid black;color:white;font-family:Montserrat;">
+      <div><!-- Last {{testtable[0].length}} Workouts' Calories -->Calories Burnt In Previous Workouts</div>
+    </div>
+    <div class="col-33" style="font-size:14px;border:0px solid black;color:white;font-family:Montserrat;">
+       <div ng-click="showAlert();"><!-- clearnow() -->
+          <img  src="img/clearbtn-01.svg" style="width:50%;float:right;"/>
+        </div>
+<!--         <div ng-click="pushnow(rescal,resdate,restitle,restime,restype)">
+          <img  src="img/clearbtn-01.svg" style="width:50%;float:left;"/>
+        </div> -->
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+<div style="background-color:rgba(255,255,255,0.65);width:100%;border:0px solid blue;margin-top:8%;">
+  <canvas id="line" class="chart chart-line" chart-data="testtable" chart-labels="labels" chart-legend="false" chart-click="onClick" animation="true">
+  </canvas> 
+</div>
+<div style="background-color:rgba(255,255,255,0.65);width:100%;height:50px;">
+</div>
+
+<div style="width:100%;height:120px;border:0px solid red;background-image: url(img/historysmall-01.svg);background-size:100%;margin-top:-11%;">
+  <div class="row" style="height:105%;width:105%;margin-left:-2.5%;">
+    <div class="col col-66" style="height:100%;width:12%;background-image: url(img/historysmallleft-01.svg);background-size:100%;border:0px solid red;text-align:center;margin-top:-1%;">
+      <div style="height:100px;margin-top:25px;margin-bottom:auto;border:0px solid green;">
+      <p style="font-family:BebasNeue;font-size:60px;color:white;">
+       <!--  {{historyworkouts.length | addzero}} -->
+        {{historyworkouts[0].date | date: "MMM d"}}
+      </p>
+      <br>
+      <p style="font-family:Montserrat; font-size:15px;color:white;">
+        Date Started
+      </p>
+      </div>
+
+    </div>
+    <div class="col col-40" style="width:25%;margin-left:-12%;border:0px solid blue;height:100%;text-align:center;margin-top:-1%;">
+      <div style="height:100px;margin-top:25px;margin-bottom:auto;border:0px solid green;">
+      <p style="font-family:BebasNeue;font-size:60px;color:white;">
+        <!-- {{historyworkouts[0].date | date: "MMM d"}} -->
+         {{historyworkouts.length | addzero}}
+      </p>
+      <br>
+      <p style="font-family:Montserrat; font-size:15px;color:white;">
+         No. Of Workouts<br/><div style="margin-top:-10%;font-family:Montserrat; font-size:15px;color:white;">Completed</div>
+      </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div style="width:100%;background-color:white;padding-top:5px;border-bottom:0px solid black;margin-top:0%;text-align:center;font-family:BebasNeue;font-size:18px;">
+Previous Workouts
+</div>
+
+
+
+
+<div style="width:100%;background-color:white;border-bottom:10px solid black;margin-top:0%;">
+  <div style="width:90%;margin-left:auto;margin-right:auto;border:0px solid blue;padding:5px;">
+    <div style="font-family:BebasNeue;font-size:18px;width:33%;text-align:center;border:0px solid black;float:left;" ng-click="tendays();">
+      <img src="{{tenbtn}}"/>
+    </div>
+    <div style="font-family:BebasNeue;font-size:18px;width:33%;text-align:center;float:right;border:0px solid black;" ng-click="ninetydays();">
+       <img src="{{ninetybtn}}"/>
+    </div>
+    <div style="font-family:BebasNeue;font-size:18px;width:33%;text-align:center;margin-left:auto;margin-right:auto;border:0px solid black;" ng-click="thirtydays();">
+       <img src="{{thirtybtn}}"/>
+    </div>
+  </div>
+</div>
+
+
+  <div style="height:30px;background-color:rgba(255,255,255,0.0);">
+  </div>
+</div>
+
+
+
+<div style="width:100%;background-color: rgba(255,255,255,0.0);">
+<div ng-repeat="history in historyworkouts"   ng-if="$index < daterange" style="margin-top:-2.5%;width:95%;margin-left:2.5%;background-color:black;margin-bottom:40px;border-radius:20px;">
+
+<!--   <div style="box-shadow: 1px 3px 10px #36cc46;border:5px solid white;border-radius:0px;width:100%;height:100px;background-color:white;margin-left:auto;margin-right:auto;">
+    <div style="border-bottom:2px solid black;height:90px;width:25%;float:left;background-image:url(img/histsmback-01.svg);background-size:100% 100%;text-align:center;font-family:BebasNeue;font-size:25px;padding-top:20px;color:white;">
+     {{history.date | date : "MMM d"}}
+    </div>
+    
+    <div style="border-radius: 0px 5px 5px 0px;border-bottom:2px solid black;height:100px;width:75%;float:right;">
+      <div>
+          <div>
+            <h1 style="color:black;">{{history.title}}</h1><p>
+            <h6>{{history.cal}}<br>
+              {{daterangeresult}}
+            Time: {{history.date | date : "mediumDate"}}</h6>
+          </div>
+        </div>
+      </div>
+  </div> -->
+
+  <div class="animateded slideInUp" style="width:100%;border:0px solid black;height:100px;">
+    
+    <div style="width:100%;border:0px solid black;height:25%;margin-top:-2%;margin-bottom:2%;margin-left:0%;text-align:center;font-family:Geo;color:white;font-size:16px;">
+      <div style="height:5px;width:100%;text-align:cetner;"></div>
+      {{history.title}}
+    </div>
+
+    <div style="height:10%;border:0px solid black;"></div>
+
+
+
+    <div style="width:100%;border:0px solid black;height:50%;padding:5px;color:white;text-align:center;">
+          <div style="margin-left:2%;width:32%;border:0px solid blue;height:50px;float:left;margin-top:-2%;font-size:22px;font-family:BebasNeue;">
+            {{history.time | timeconvert}} <!-- {{$index}} -->  <br> <div style="font-family:Geo;font-size:12px;">Total Time</div>
+          </div>
+
+          <div style="width:32%;border:0px solid blue;height:100%;float:left;margin-top:-2%;font-size:22px;font-family:BebasNeue;">
+            {{history.cal}}<!-- {{$index}} --> <br> <div style="font-family:Geo;font-size:12px;">Total Calories Burnt</div>
+          </div>
+
+          <div style="width:32%;border:0px solid blue;height:100%;float:left;margin-top:-2%;font-size:22px;font-family:BebasNeue;">
+            <!-- {{history.cal}} {{$index}} --> {{history.type}}<br> <div style="font-family:Geo;font-size:12px;">Body Type</div>
+          </div>
+
+
+    </div>
+
+<!--     <div style="width:100%;border:5px solid yellow;">
+    <div style="margin-left:5%;width:30%;border:2px solid blue;height:30%;padding:5px;color:white;float:left;">
+      {{history.title}} {{history.cal}} {{$index}}
+    </div>
+    <div style="width:30%;border:2px solid red;height:30%;padding:5px;color:white;float:left;">
+      {{history.title}} {{history.cal}} {{$index}}
+    </div>
+    <div style="width:30%;border:2px solid green;height:30%;padding:5px;color:white;float:left;">
+      {{history.title}} {{history.cal}} {{$index}}
+    </div>
+  </div> -->
+
+    <div style="width:100%;border:0px solid purple;background-color:white;text-align:center;color:black;font-size:16px;font-family:BebasNeue;border-radius:0px 0px 18px 18px;position:fixed;height:25%;">
+      <div style="width:100%;">
+      {{history.date}}
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+
+
+</div>
+
+<div style="width:100%;height:120px;background-color:rgba(0,0,0,0.9);">
+  <div style="width:90%;margin-left:5%;margin-top:10%;border:0px solid white;margin-top:0px;margin-bottom:10px;color:#bdc3c7;font-size:10px;text-align:center;">
+    <br>
+    Disclamer: Do not attempt any workout without first consulting your physician. If at any time you feel over-exerted, stop the workout, rest and have some water. All workouts have been adapted to be suitable to for at home excercises. Calories burned are only an estimate <br>
+
+  </div>
+</div>
+
+
+
+
+<!-- 
+
+<div style="min-height:2000px;border:2px solid black;">
+
+</div>
+
+
+<div style="border:10px solid white;width:100%;height:25%;color:white;background-color:white;font-size:20px;">
+{{twoWeeksForward | date: "mediumDate"}}<br>
+{{aDate}}<br>
+{{today}}<br>
+{{resultis}}<br>
+{{daterange}}<br>
+{{testtable[0][3]}}<br>
+{{testtable[0]}}
+
+<div style="border:5px solid black;width:50%;height:25%;color:white;background-color:black;font-size:20px;">
+<div ng-click="pushnow(25,70,35,30)">Push To See</div>  
+<div ng-click="tendays();">change to 10</div>
+<div ng-click="thirtydays();">change to 30</div>
+<div ng-click="ninetydays();">change to 90</div>
+</div>
+{{historydata}}<br>{{historyofworkouts}}
+</div>
+
+
+<div style="height:50px;background-color:white;">
+</div>
+
+
+
+<div style="border:0px solid black;border-radius:50px;width:90%;height:100px;background-color:white;margin-left:auto;margin-right:auto;">
+  <div style="border-radius: 45px 0px 0px 50px;border:0px solid red;height:100px;width:40%;float:left;background-image:url(img/histsmback-01.svg);background-size:100% 100%;"></div>
+  <div style="border-radius: 0px 50px 50px 0px;border:0px solid blue;height:100px;width:60%;float:right;"></div>
+    <img src="img/ffeat.svg" style="width:45%;border:0px solid black;position:absolute;"/> 
+</div>
+
+
+
+
+<div ng-repeat="history in historyworkouts" ng-if="$index < daterange"style="background-color:black;margin-top:-2.5%;">
+  <div style="height:90px;margin-bottom:5%;">
+    <div class="roundedhistory">
+      <div>
+        <h1 style="color:black;">{{history.title}}</h1><p>
+        <h6>{{history.cal}}<br>
+          {{daterangeresult}}
+        Time: {{history.date | date : "mediumDate"}}</h6>
+      </div>
+    </div>
+
+    <div class="bottomroundedhistory" style="background-image: url(img/historydownback2-01.svg);background-size:cover;">
+      <div class="row" style="height:100%;border:0px solid red;">
+        <div class="col col-50">
+          <img src="img/smallcal-01.svg" style="height:25px;border:0px solid blue;margin-top:-20%;"/>
+         <div style="font-family:BebasNeue;font-size:15px;color:white;border:0px solid red;margin-left:5%;margin-top:10%;">470
+          </div> 
+        </div>
+        <div class="col col-50">
+         <img src="img/smallcal-01.svg" style="height:80%;"/> 
+          <div style="font-family:BebasNeue;font-size:25px;color:white;margin-left:5%;margin-top:-4.5%;border:0px solid blue;">470
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+  </div>
+
+
+
+
+<div ng-repeat="history in historyworkouts" style="display:none;background-color:white;margin-top:-2.5%;border:20px solid blue;">
+  <div style="height:90px;margin-bottom:5%;">
+    <div class="roundedhistory">
+      <div>
+        <h1>{{history.title}}{{today}}</h1><p>
+        <h6>{{history.date}}{{daterange}}<br>
+        Time: {{history.date | date: "MMM d"}}--</h6>
+      </div>
+    </div>
+
+    <div class="bottomroundedhistory" style="background-image: url(img/historydownback2-01.svg);background-size:cover;">
+      <div class="row" style="height:100%;border:0px solid red;">
+        <div class="col col-50">
+          <img src="img/smallcal-01.svg" style="height:25px;border:0px solid blue;margin-top:-20%;"/>
+          <div style="font-family:BebasNeue;font-size:15px;color:white;border:0px solid red;margin-left:5%;margin-top:10%;">470
+          </div> 
+        </div>
+        <div class="col col-50">
+          <img src="img/smallcal-01.svg" style="height:80%;"/>
+          <div style="font-family:BebasNeue;font-size:25px;color:white;margin-left:5%;margin-top:-4.5%;border:0px solid blue;">470
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+  </div>
+
+
+<div style="height:10%;border:2px solid white;width:100%;background-color:White">
+</div> -->
+
+
+    
+  </ion-content>
+</ion-view>

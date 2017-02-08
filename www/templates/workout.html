@@ -1,0 +1,144 @@
+<ion-view cache-view="false" hide-back-button="true" hide-nav-bar="true" can-swipe-back="false">
+  <ion-content style="height:100%;background-image:url(img/sublback-01.png);background-size:100% 100%;" scroll="false">
+
+<!--   <audio onloadeddata="var audioPlayer = this; setTimeout(function() { audioPlayer.play(); }, 1000)"><source data-ng-src="{{audiormove}}" type="audio/mpeg"/></audio>
+  <audio onloadeddata="var audioPlayerRep = this; setTimeout(function() { audioPlayerRep.play(); }, 3000)"><source data-ng-src="{{audiorrep}}" type="audio/mpeg"/></audio> --><!-- MOVE: {{audiormove}} and REP: {{audiorrep}} and video {{keeper}} <p> {{meal_index+1}} and just basic {{meal_index}} and length {{diff.length}} and the whole diff: {{diff[meal_index].audiomove}} and {{diff[meal_index].audiorep}} and --> <!-- {{rs}} and {{ms}} and muter {{muter}} and workout index {{workout_index}} -->
+
+
+
+<!--The ng-repeat to put all the information into variables div-->
+ <div ng-repeat="m in diff track by $index">
+        <div ng-if="meal_index==$index" ng-init="vs(m.time);tracker(m.cal);keepimage(m.vid,m.size);keepprogress(m.time);keeptitle(m.title,m.audiomove,m.audiorep);keeptotalmoves(meal_index,diff.length,m.reps);">
+            <div style="height:80%;width:100%;max-width:600px;border-radius:100px;border:0px solid black;margin-left:auto;margin-right:auto;">
+             <!--   <img ng-src="{{m.img}}" style="width:100%;height:100%;"/> -->
+            </div>
+        </div>
+</div>
+
+
+
+<!--The entire screen div-->
+
+<div style="height:100%;width:100%;border:0px solid blue;font-family:BebasNeue,Roboto,Arial;font-weight:normal;
+        font-style:normal;">
+    <div style="height:10%;min-height:30px;width:100%;text-align:center;color:white;border:0px solid black;margin-left:0%;" ng-click="hidesimple();"><!--The top bar only div and had a margin-left of -20%..but I changed it...don't know why it was set to that but keep eye out for reason-->
+
+    </div> 
+
+
+    <!--The second bar div-->
+    <div class="animatedquick bounceInDown"style="height:60px;width:100%;border:0px solid yellow;position:fixed;" ng-click="hidesimple();">
+      <div style="height:10%;min-height:30px;width:100%;text-align:center;color:black;background: transparent;border:0px solid black;margin-top:-5%;margin-left:-1%;"><!--The top bar only div-->
+      <div class="row" style="border:0px solid blue;">
+        <div style="border:0px solid red;font-size:21px;text-align:left;padding-left:2%;" class="col-33">{{titleshow}}<br>{{moverep}}<i style="font-size:14px;">x</i> REPS
+        
+      <p class="animated fadeOut" style="font-size:14px;color:black;">Share with your friends</p>
+        </div>
+
+        <div style="border:0px solid red;font-size:72px;padding-top:5%;" class="col-33"><!-- &nbsp;{{startCount}} --></div>
+
+
+        <div style="border:0px solid red;font-size:70px;text-align:right;padding-right:2%;" class="col-33">
+          <br>
+          <p>
+          {{startCount | timeconvert}}
+          </p>
+      </div>
+
+        
+      </div>
+    </div> 
+
+
+    </div>
+    <!--The center image/gif div-->
+    <div style="height:100%;width:100%;border:0px solid purple;border-radius:100px;margin-left:auto;margin-right:auto;margin-top:-8%;" ng-click="hidesimple();" on-swipe-right="prev()" on-swipe-left="next()">
+
+        <video class="animatedw fadeIn delaylong" webkit-playsinline autoplay loop mute ng-src="{{keeper}}" style="width:102%;height:101%;border-radius:100px;z-index:1;">
+        </video>
+
+    </div>  
+
+
+
+    <!--The beginning message that covers the entire screen div-->
+    <!--this should be a pop alert instead-->
+    <div style="height:45%;width:100%;border:0px solid red;border-radius:100px;margin-left:auto;margin-right:auto;position:fixed;bottom:0px;display:{{alwayshide}};">
+        <img src="https://media.giphy.com/media/TLpGHso4sEJlS/giphy.gif" style="width:100%;height:100%;border:0px solid green;border-radius:100px;z-index:1;"/>
+    </div>
+
+
+
+ 
+
+
+
+    <!--The controls div-->
+    <div  style="height:40%;width:100%;min-height:90px;border:0px solid blue;text-align:center;margin-top:-0%;position:fixed;bottom:0%;max-height:160px;">
+
+          
+        <div class="{{animationplayer}}" ng-show="!showDetails" style="width:100%;height:69%;min-height:60px;background-image:url(img/backfade-01.png);border:0px solid purple;margin-right:auto;margin-left:auto;padding-top:2px;">
+<!--             <div style="height:100px;background-color:black;z-index:2;color:red;">Hello</div> -->
+                    <button ng-disabled="isDisabled" id='prevbtn' ng-click='prev();progessmove(1);' class="coolbtn" ><img src="img/rewindbtn-01.png" style="width:70px;height:70px;border:0px solid red;border-radius:100px;"/>
+                    </button>
+                    
+                    <button style="border:0px solid blue;display:{{player}};" ng-click='startTimeout();tracking(m.time);changeit();' class="coolbtn"><img src="img/playbtn-01.png" style="width:70px;height:70px;margin-top:5%;border:2px solid {{choice.colorline}};border-radius:100px;"/>
+                    </button>
+
+                    <button style="display:{{pauser}};" ng-click='stopTimeout();tracking(m.time);changeitagain();modal.show();' class="coolbtn"><img src="img/pausebtn-01.png" style="width:70px;height:70px;margin-top:5%;border:2px solid {{choice.colorline}};border-radius:100px;"/>
+                    </button>
+                   
+                   <button ng-click='next();progessmove(0);' class="coolbtn"><img src="img/fwdbtn-01.png" style="width:70px;height:70px;border:0px solid red;border-radius:100px;"/>
+                   </button>
+
+        </div>
+        
+        <div id="myProgress" style="background-image:url(img/backfade-01.png);border:0px solid black;margin-top:0%;">
+            <div id="myBar" style="background-image:url({{choice.back}});background-size:100%;width:{{progressbar}};">
+              <div id="label" style="min-width:150px;border:0px solid black;font-size:15px;padding-top:1px;">PROGRESS: {{meal_index+1}}/{{diff.length}}<!-- ....{{progressbar}} --></div>
+            </div>
+        </div>
+
+
+        <div style="width:100%;height:25%;border-top:1px solid black;background-color:black;">
+          <div ng-click="muteMe()" style="color:white;float:left;max-width:165px;width:30%;border:0px solid {{choice.colorline}};border-radius:30px;font-size:18px;margin-right:3%;margin-top:0.1%;padding-top:2px;color:white;">
+            <!-- {{mutetext}}&nbsp; --> <img src="{{muteimg}}" style="width:90px;height:25px;margin-top:-2%;border:1px solid black;" />
+          </div> 
+          <div ng-click="endEarly();stopTimeout();changeitagain()" style="color:white;float:right;max-width:165px;height:20px;width:30%;border:2px solid {{choice.colorline}};border-radius:30px;font-size:16px;margin-right:3%;padding-top:5px;margin-top:2px;color:{{choice.colorline}};line-height:8px;">
+            End Early
+          </div> 
+        </div>
+
+    
+
+    </div> 
+
+
+</div>
+
+
+
+<!-- 
+
+
+
+
+
+
+
+
+
+{{startCount}}
+<br>
+{{caloriessofar}}
+<br>
+{{keeper}}
+
+<br>
+{{titleshow}}
+
+<br>
+{{ctrlCheck}} -->
+
+  </ion-content>
+</ion-view>

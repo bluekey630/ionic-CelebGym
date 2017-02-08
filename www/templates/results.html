@@ -1,0 +1,204 @@
+<ion-view  hide-back-button="true" hide-nav-bar="true" can-swipe-back="false" style="background-color:white;">
+  <ion-content has-bouncing="false" side-menu-content drag-content="false">
+<!-- {{tmbc}} -->
+  <div style="height:86%;border:0px solid black;background-image:url({{choice.resultback}});background-size:250% 100%;background-position:center;">
+    <!-- This does not work -->
+    <div style="position:relative;height:100%;border:0px solid red;background-image:url(img/moonback-01.png);background-size:100% 100%;color:rgba(0,0,0,0)">.
+      <div style="margin-top:10%;font-size:38px;font-family:BebasNeue;color:white;text-align:center;">
+        Results<br><br>
+        <p style="text-align:center;font-size:20px;font-family:Arial;width:100%;border:0px solid black;padding-top:5%;">{{finishmessage}}<!-- {{ctrlCheck}} --></p><!-- {{sometestname}} -->
+        <p class="animated fadeOut" style="width:100%;font-size:14px;font-family:arial;border:0px solid black">Share with your friends</p>
+      </div>
+
+      <div style="width:100%;border:0px solid blue;margin-top:-6%;font-size:60px;font-family:BebasNeue;">
+
+
+        <div style="margin-left:auto;margin-right:auto;border:0px solid black;width:65%;height:22px;color:white;">
+<!--           <div style="float:left;"><img src="img/time-01.png" style="height:70px;">
+          </div>
+          
+          <div style="float:right;margin-top:10%;">10:00
+          </div> -->
+        </div>
+
+        <div class="animated slideInUp" style="margin-left:8.75%;border:0px solid black;width:82.5%;height:70px;margin-top:0%;color:white;text-align:center;">
+          <img src="img/time-01.png" style="height:60px;margin-right:3%;vertical-align:middle;">
+           {{totalTime | timeconvert}}<div style="border:0px solid black;float:right;height:50px;margin-top:15px;width:30%;font-size:19px;text-align:left;">Time<br>Spent</div>
+
+        </div>
+
+        <div class="animated slideInUp" style="margin-left:10%;border:0px solid black;width:80%;height:70px;margin-top:5%;color:white;text-align:center;">
+          <img src="img/cal-01.png" style="height:70px;margin-right:7%;vertical-align:middle;">
+          {{0.0175*totalcalc*loginData.weight*0.45 | number: 0}} <div style="border:0px solid black;float:right;height:50px;margin-top:15px;width:30%;font-size:19px;text-align:left;">Calories<br>Burned</div>
+
+        </div>
+
+<!--         <div style="margin-left:auto;margin-right:auto;border:0px solid black;width:65%;height:70px;margin-top:5%;color:white;">
+          <div style="float:left;"><img src="img/cal-01.png" style="height:70px;">
+          </div>
+          
+          <div style="float:right;margin-top:10%;">325
+          </div>
+        </div>
+ --><div style="background-color:rgba(0,0,0,0.65);margin-top:5%;height:140px;" class="animated slideInUp delay">
+        <div style="text-align:center;font-size:25px;height:10px;color:white;"></div>
+        <div style="text-align:center;font-size:35px;width:100%;color:white;margin-bottom:5%;">{{loginData.fname}}!</div>
+        <div style="background-color:#1DB954;border:0px solid white;font-size:30px;text-align:center;font-family:BebasNeue;color:white;margin-bottom:5%;margin-right:auto;margin-left:auto;height:35px;padding-top:10px;">
+          Share your results
+        </div>
+
+        <div style="margin-top:-2.5%;width:90%;border-radius:15px;margin-left:auto;margin-right:auto;height:40px;color:white;font-size:20px;padding-top:2.5%;border:0px solid black;">
+            <div style="margin-left:2%;margin-right:3%;height:90%;width:30%;border:0px solid black;float:left;" ng-click="shareFbBtn(choice.sharemessage,choice.shareimglink)">
+              <img src="img/fbbtn-01.svg" style="width:100%;">
+            </div>
+            <div style="width:30%;height:90%;border:0px solid black;text-align:center;float:left;margin-right:3%;" ng-click="shareTwitterBtn(choice.sharemessage,choice.shareimglink)">
+              <img src="img/twbtn-01.svg" style="width:100%;">
+            </div>
+            <div style="width:30%;height:90%;border:0px solid black;text-align:center;float:left;" ng-click="shareNative(choice.sharemessage,choice.shareimaglink,choice.shareimagelink)">
+              <img src="img/instbtn-01.svg" style="width:100%;">
+            </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div style="width:100%;height:14%;border:0px solid black;margin-top:2.5%;">
+  <div ng-click='pushnow(totalcalc,choice.title,totalTime,choice.type);clearbackhome();' style="width:45%;border:0px solid red;float:left;margin-left:2.5%;">
+    <img src="img/homebtn2-01.svg" style="width:100%;">
+  </div>
+  <div ng-click='pushnow(totalcalc,choice.title,totalTime,choice.type);clearbackhistory();' style="width:45%;border:0px solid red;float:right;margin-right:2.5%;">
+    <img src="img/histbtn2-01.svg" style="width:100%;">
+  </div>
+
+</div>
+
+
+
+
+
+<!--    <div id="resultsnavbtn">
+    <div class="row" style="border:0px solid red;">
+      <div class="col-80 col-offset-10" style="border:0px solid blue;">
+        <div class="resultscenterme" ng-click='clearbackhistory()'><img class="resultsnavbtn" src="img/historybtn-01.svg"/></div>
+      </div>
+    </div>
+    <div class="row" style="border:0px solid green;margin-top:4%;">
+      <div class="col-80 col-offset-10" style="border:0px solid blue;">
+        <div class="resultscenterme" ng-click='clearbackhome()'><img class="resultsnavbtn" src="img/homebtn-01.svg"/></div>
+      </div>
+    </div>
+  </div>
+
+<div style="width:100%;background-color:white;height:250px;"></div>
+
+  <div style="height:4%;width:100%;border:0px solid red;background-image:url({{choice.back}});background-size:80%;">
+  </div>
+
+  <div class="mainimg" style="border:0px solid black;height:55%;background-image:url({{choice.back}});background-size:80%;">
+
+    <div style="height:8%;width:100%;border:0px solid blue;">
+      <div class="row">
+        <div class="col-33 col-offset-67"><img src="img/longlogo-01.svg" style="width:80%;margin-top:-1%;"/>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:58%;width:100%;border:0px solid red;"><img src="{{choice.mainimg}}" style="width:100%;"/>
+    </div>
+
+    <div class="animated slideInUp" style="height:21%;width:100%;border:0px solid red;text-align:center;color:white;">
+      <div class="row" style="border:0px solid black;font-family:BebasNeue;font-size:20px;">
+        <div class="col-50" style="border:0px solid red;">
+          <div class="resultscenterme">Total Calories</div>
+        </div>
+        <div class="col-50" style="border:0px solid red;">
+          <div class="resultscenterme">Total Time</div>
+        </div>
+      </div>
+      <div class="row" style="border:0px solid green;font-family:BebasNeue;font-size:40px;">
+        <div class="col-50" style="border:0px solid blue;">
+          <div class="resultscenterme"><img class="iconslarge" src="img/cal-01.svg"/>{{totalcalc}}</div>
+        </div>
+        <div class="col-50" style="border:0px solid blue;">
+          <div class="resultscenterme"><img class="iconslarge" src="img/time-01.svg"/>{{totalTime}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:13%;width:100%;border:0px solid red;background-image:url(img/wave4-01.svg);background-size:100%;margin-top:1%;">
+
+    </div> -->
+
+ <!--    <div style="height:8%;width:100%;border:2px solid red;"><img src="{{choice.mainimg}}" style="border:2px solid blue;height:15%;width:100%;"/>empty space
+    </div>  --> 
+  
+       <!--  <img class="images" src="img/rb.png" style="width:110%;margin-left:-5%;z-index:1;"/> -->
+<!--         <div style="border:0.1px solid transparent;text-align:left;;margin-left:auto;margin-right:auto;width:300px;color:white;font-size:3.5em;margin-top:80px;font-family:arial;height:100px;">
+
+
+        {{choice.title}}
+        <p style="padding-top: 15px;">
+        Workout
+        </p>
+
+        <div style="border:0px solid red;width:70px;text-align:center;color:white;font-size:12px;margin-top:20px;">
+          <b>No. {{choice.num}}</b>
+        </div>
+
+      </div>  -->
+  
+
+
+
+<!-- <div style="width:100%;height:40px;border:2px solid black;" ng-click="pushnow(totalcalc,choice.title,totalTime,choice.type)">{{restitle}}/{{rescal}}/{{restime}}//{{resdate}}
+          <img  src="img/clearbtn-01.svg" style="width:50%;float:left;"/>
+  </div>
+
+
+
+  <div id="sociallinks" style="margin-top:-1%;">
+    <div class="row" style="border:0px solid red;">
+      <div class="col-80 col-offset-10" style="border:0px solid green;color:#959EA8;font-family:Montserrat;">Share your results</div>
+    </div>
+    <div class="row" style="border:0px solid red;margin-top:1%;">
+      <div class="col-10" style="border:0px solid blue;height:25px;"></div>
+      <div class="col-20" style="border:0px solid blue;height:25px;"><img src="img/fb-01.svg" style="width:60%;margin-left:20%"/></div>
+      <div class="col-10" style="border:0px solid blue;height:25px;"></div>
+      <div class="col-20" style="border:0px solid blue;height:25px;"><img src="img/twit-01.svg" style="width:60%;margin-left:20%"/></div>
+      <div class="col-10" style="border:0px solid blue;height:25px;"></div>
+      <div class="col-20" style="border:0px solid blue;height:25px;"><img src="img/insta-01.svg" style="width:60%;margin-left:20%"/></div>
+      <div class="col-10" style="border:0px solid blue;height:25px;"></div>
+    </div>
+  </div>
+
+
+   <div id="resultsnavbtn">
+    <div class="row" style="border:0px solid red;">
+      <div class="col-80 col-offset-10" style="border:0px solid blue;">
+        <div class="resultscenterme" ng-click='clearbackhistory()'><img class="resultsnavbtn" src="img/historybtn-01.svg"/></div>
+      </div>
+    </div>
+    <div class="row" style="border:0px solid green;margin-top:4%;">
+      <div class="col-80 col-offset-10" style="border:0px solid blue;">
+        <div class="resultscenterme" ng-click='clearbackhome()'><img class="resultsnavbtn" src="img/homebtn-01.svg"/></div>
+      </div>
+    </div>
+  </div>
+<br>{{totalcalc}}//{{totalTime}}//{{choice.title}}//{{choice.type}}...
+<br>Calories:{{rescal}}//Time: {{restime}}//Title:{{restitle}}//Date:{{resdate}}//Type:{{restype}}....
+<br>
+<p style="border:2px solid black;" ng-click="savedata(totalcalc,totalTime,choice.title,choice.type)">Saved Date</p>
+<br>
+<br>
+<br>
+<br>
+    <p style="border:2px solid black;" ng-click="clearbackhistory();savedata({{totalcalc}},{{totalTime}},{{choice.title}});">Go to History</p>cal,date,title,time
+    <p style="border:2px solid black;" ng-click='clearbackhome()'>Go to Home</p>
+    <br>Total Calories: {{totalcalc}}<br>Total Time Spent working out: {{totalTime}}
+<p>
+    {{ctrlCheck}} -->
+
+  </ion-content>
+</ion-view>

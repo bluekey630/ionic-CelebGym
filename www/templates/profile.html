@@ -1,0 +1,114 @@
+<ion-view  style="background-color:black;"> 
+  <ion-nav-title>
+   <p style="font-family:BebasNeue;font-size:22px;color:white;">Profile</p>
+  </ion-nav-title>
+
+ <ion-content class="AnimationName">
+ <div style="width:100%;height:100%;margin-top:-1%;border-top:0.1px solid black;background-image:url(img/profileback-01.png);background-size:100% 100%;">
+  <div styl="width:100%;height:125px;border:2px solid blue;">
+    <div style="width:110px;height:110px;margin-top:0%;padding-top:40px;margin-left:auto;margin-right:auto;z-index:1;border:4px solid #B48628;border-radius:50%;font-family:bebasNeue;font-size:75px;color:white;margin-top:35px;text-align:center;">{{loginData.fname | limitTo:1}}{{loginData.lname | limitTo:1}}
+    </div>
+  </div>
+
+
+
+
+<div style="width:100%;margin-top:10%;border:0px solid black;">
+    <form ng-submit="doLogin()" style="margin-top:5%;">
+      <div class="list" style="font-family:BebasNeue;font-size:15px;">
+          
+
+          <input maxlength="20" style="margin-left:25%;width:50%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:26px;text-align:center;color:white;line-height:150%;" type="text"  ng-model="loginData.fname">
+          <div style="width:100%;color:#a5a4a4;margin-bottom:10px;">
+            <div style="width:50%;text-align:center;border-top:1px solid black;margin-left:25%;font-size:14px;color:black;">First Name </div>
+          </div>
+
+
+
+          <input maxlength="20" style="margin-left:25%;width:50%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:26px;text-align:center;color:white;line-height:150%;" type="text"  ng-model="loginData.lname">
+          <div style="width:100%;color:#a5a4a4;margin-bottom:10px;">
+            <div style="width:50%;text-align:center;border-top:1px solid black;margin-left:25%;font-size:14px;color:black;">Last Name </div>
+          </div>
+
+
+           <input maxlength="20" style="margin-left:30%;width:40%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:34px;text-align:center;color:white;line-height:150%;" type="tel" ng-model="loginData.weight">
+          <div style="width:100%;color:#a5a4a4;margin-bottom:10px;">
+            <div style="width:40%;text-align:center;border-top:1px solid black;margin-left:30%;font-size:14px;color:black;">Weight </div>
+          </div>
+
+
+           <input maxlength="20" style="margin-left:30%;width:40%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:34px;text-align:center;color:white;line-height:150%;" type="tel" ng-model="loginData.age">
+          <div style="width:100%;color:#a5a4a4;margin-bottom:10px;">
+            <div style="width:40%;text-align:center;border-top:1px solid black;margin-left:30%;font-size:14px;color:black;">Age </div>
+          </div>
+
+
+      </div>
+    </form>
+
+
+
+  </div>
+
+
+       <div style="position:bottom;margin-top:0px;width:65%;height:50px;margin-left:17.5%;border:0px solid black;border-radius:50px;color:white;text-align:center;font-size:20px;" ng-click="saveLogin()"> <img src="img/savebtn22-01.svg" style="width:100%;height:100%;"/>
+    </div>
+
+
+ </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--   <div style="margin-top:35%;height:5%;border:0px solid black;background-image:url(img/tilt-01.png);background-size:100% 100%;">
+  </div>
+
+  <div style="width:100%;height:350px;border-bottom:10px solid {{loginData.color}};background-color:white;">
+    <div style="float:left;width:55%;height:30%;margin-top:-20%;margin-left:0%;z-index:100;border:0px solid white;">
+    </div>
+    
+    
+    <div style="width:50%;height:25%;margin-top:0%;padding-top:5%;margin-left:50%;z-index:1;border:0px solid blue;font-family:bebasNeue;font-size:35px;color:{{loginData.color}}">{{loginData.fname | limitTo:1}}{{loginData.lname | limitTo:1}}</div>
+    <div style="height:15px;"></div>
+    <div style="width:100%;background-color:white;">
+    <form ng-submit="doLogin()" style="margin-top:5%;">
+      <div class="list" style="font-family:BebasNeue;font-size:15px;">
+          <input maxlength="20" style="float:left;margin-left:2.5%;width:45%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:20px;text-align:center;" type="text"  ng-model="loginData.fname">
+          <input maxlength="20" style="float:left;margin-left:2.5%;width:45%;border-bottom:0px solid black;background:transparent;;font-family:bebasNeue;font-size:20px;text-align:center;" type="text" ng-model="loginData.lname">
+
+          <div style="width:100%;color:#a5a4a4">
+            <div style="float:left;width:45%;text-align:center;border-top:1px solid black;">First Name </div>
+            <div style="float:right;width:45%;margin-right:5%;text-align:center;border-top:1px solid black;">Last Name</div>
+          </div>
+
+
+          <input maxlength="3" style="margin-top:10px;float:left;margin-left:2.5%;width:50%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:55px;height:70px;text-align:center;" 
+          type="tel" ng-model="loginData.weight">
+          
+          <input maxlength="2" style="margin-top:10px;float:right;margin-right:5%;width:30%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:55px;height:70px;text-align:center;" type="tel" ng-model="loginData.age">
+
+           <div style="width:100%;color:#a5a4a4">
+            <div style="float:left;margin-left:2.5%;width:50%;text-align:center;border-top:1px solid black;">Weight (LBS) </div>
+            <div style="float:right;width:30%;margin-right:5%;text-align:center;border-top:1px solid black;">Age</div>
+          </div>
+
+      </div>
+    </form>
+  </div>
+  </div>
+    <div style="position:bottom;margin-top:-45px;width:65%;height:50px;margin-left:17.5%;border:0px solid black;border-radius:50px;color:white;text-align:center;font-size:20px;" ng-click="saveLogin()"> <img src="img/savebtn22-01.svg" style="width:100%;height:100%;"/>
+    </div> -->
+
+
+  </ion-content>
+</ion-view>

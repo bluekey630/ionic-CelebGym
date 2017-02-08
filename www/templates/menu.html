@@ -1,0 +1,77 @@
+<ion-side-menus enable-menu-with-back-views="false">
+  <ion-side-menu-content>
+    <ion-nav-bar id="bb">
+      <ion-nav-back-button style="color:white"><!--this is the back button-->
+      </ion-nav-back-button>
+
+      <ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon button-dark"  menu-toggle="left" style="color:white;"><!--this is the navigation button section-->
+        </button>
+      </ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-nav-view name="menuContent"></ion-nav-view>
+  </ion-side-menu-content>
+
+  <ion-side-menu side="left" style="background-color:black;width:50px;color:#B01B77;font-family:BebasNeue;">
+    <ion-header-bar style="margin-top:2%;background-color:transparent;border:00px solid red;height:50px;">
+      <h1 class="title"><img class="toplogoside" src="img/whitelogoshadow2-01.svg"/></h1>
+    </ion-header-bar>
+    <ion-content class="custom">
+    <br>
+      <ion-list>
+
+        <ion-item menu-close href="#/app/browse">
+          <i class="ion-star" style="padding-left:0px;"></i>&nbsp;&nbsp;
+          Workouts
+        </ion-item>
+
+        <ion-item menu-close href="#/app/history">
+          <i class="ion-ios-pulse-strong" style="padding-left:0px;"></i>&nbsp;&nbsp;
+          History&nbsp;&nbsp; <img src="img/lock2-01.svg" style="width:25px;height:25px;border:0px solid white;"/>
+        </ion-item>
+
+
+
+        <ion-item menu-close href="#/app/profile">
+          <i class="ion-android-person" style="padding-left:0px;"></i>&nbsp;&nbsp;&nbsp;
+          Profile
+        </ion-item>
+
+
+        <ion-item menu-close href="#/app/settings">
+          <i class="ion-grid"></i>&nbsp;&nbsp;&nbsp;
+          Settings
+        </ion-item>
+
+        <ion-item menu-close href="#/app/premiumpage">
+          <i class="ion-grid"></i>&nbsp;&nbsp;&nbsp;
+          Premium
+        </ion-item>
+
+
+
+ 
+
+
+
+        <br><!--space between the links-->
+        
+
+
+        
+
+        
+
+        <ion-item menu-close href="#/app/toc" style="color:#C1C4C8;background-color:black;font-size:17px;">
+          Terms of Service
+        </ion-item>
+        
+        
+        <ion-item menu-close href="#/app/privacy" style="color:#C1C4C8;background-color:black;font-size:17px;">
+          Privacy Policy
+        </ion-item>
+
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>

@@ -1,0 +1,223 @@
+<ion-nav-bar></ion-nav-bar><!--THIS IS THE DETAILS PAGE-->
+<ion-view style="background-image:url({{choice.back}});background-size:100% 100%;background-position:0% 0%;">
+  <ion-content>
+<!-- {{ctrlCheck}} --><!-- {{choice.mainimg}} -->
+<div style="width:100%;height:10px;border:0px solid {{choice.colorline}};">
+</div>
+      <div class="mainimg" style="background-image:url({{choice.mainimg}});border:1px solid transparent;min-height:240px;height:20%;background-size:100% 100%;margin-top:-4.0%;"><!--might want to go back to 275px height-->
+        
+       <!--  <img class="images" src="img/rb.png" style="width:110%;margin-left:-5%;z-index:1;"/> -->
+        <div style="border:0px solid transparent;text-align:left;;margin-left:auto;margin-right:auto;width:300px;color:white;font-size:3.5em;margin-top:80px;font-family:BebasNeue,Impact;height:100px;">
+
+        <!--This is sparta and I want to see how much this-->
+
+        <!-- {{choice.title}}<br> -->
+<!--         <p style="padding-top: 15px;font-size:36px;">
+        Workout
+      </p> -->
+
+<!--         <div style="border:2px solid white;width:70px;text-align:center;color:white;font-size:12px;margin-top:20px;">
+  <b>No. {{choice.num}}</b> 
+
+        </div>
+ -->
+      </div>
+      
+<!--       <a href="#/app/bcount" ng-click="zeroOut()">
+       <div style="margin-top:35px;">
+          <div style="margin-right:auto;margin-left:auto;width:200px;">
+          <img src="img/start2-01.png" style="height:100%;width:200px;"/>         
+        </div>
+      </div>
+      </a> -->
+      </div>
+
+<!--       <ion-list>
+ <ion-item class="eachitem" href="#/app/move">
+        <div class="btn">
+            <h1><div style="width:3px;margin-bottom:-11px;color:blue;">.</div>START WKOUT</h1>
+          </div>
+background-image:url(img/descback78-01.png);background-size:100% 100%;
+      </ion-item>
+  </ion-list> -->
+
+  <div style="border:0px solid transparent;color:#CCCCCC;width:100%;text-align:left;height:220px;padding:10px;margin-top:-10px;margin-bottom:17px;background-color:rgba(0,0,0,0.86);">
+
+    <div style="width:92.5%;max-width:450px;margin-left:auto;margin-right:auto;font-size:13px;margin-top:5px;font-family:Geo;">
+      <i>{{choice.title}}</i> - {{choice.desc}}  <!-- {{ctrlCheck}} -->
+      <br>
+      <h1 class="animatedshort fadeOut">Share with your friends</h1>
+      <br>
+      <!-- Celebrities this workout was inspired by: {{choice.celeb}} -->
+    </div>
+
+  </div>
+  <div style="margin-top:-80px;width:100%;border:0px solid blue;">
+  <a href="#/app/count" ng-click="zeroOut()">
+       <div >
+          <div class="animatedlongmore pulselong" style="margin-right:auto;margin-left:auto;width:65%;">
+          <img src="img/startbtn-01.svg" style="width:100%;border:0px solid white;border-radius:50px;"/>         
+        </div>
+      </div>
+      </a>
+  </div>
+
+  <div style="width:100%;height:40px;background-color:rgba(0,0,0,0.75);border:0px solid white;margin-top:15px;">
+    <div style="width:300px;border:0px solid white;margin-left:auto;margin-right:auto;">
+        <img src="{{bub[3]}}" style="height:25px;margin-top:2%;float:left;" ng-click="choosen(choice.easy);bubble(choice.easyinfo)">
+        <img src="{{bub[4]}}" style="height:25px;margin-top:2%;margin-left:30px;" ng-click="choosen(choice.medium);bubble(choice.medinfo)">
+        <img src="{{bub[5]}}" style="height:25px;margin-top:2%;float:right;" ng-click="choosen(choice.hard);bubble(choice.hardinfo)">
+
+       <!--  
+        <a href="#/app/search"><button class="spacing">One</button></a>
+        <button class="spacing" ng-click="choosen(choice.easy);bubble(choice.easyinfo)">Easy</button>
+        <button class="spacing" ng-click="choosen(choice.hard);bubble(choice.hardinfo)">Hard</button> -->
+
+    </div>
+
+  </div>
+
+<!--   <img src="img/cal-01.png" ng-click="choosen(choice.easy);bubble(choice.easyinfo)">
+    WHAT THE HELL{{bub[3]}}
+    <div> -->
+      
+
+      	<!-- <ion-item style="height:150px;border:2px solid blue;width:100%;overlow:auto;" href="#/app/search">
+        <p style="text-align:center;">{{choice.desc}}</p>
+        <p style="text-align:center;">This workout consists of crazy ass workout moves that will <br>work your body to the bone and will go much further than any <br> workout program you have tried before. So please continue to <br>use this workout to get to your fitness goals. Thanks
+        </p>
+      	
+      	</ion-item> -->
+        <!-- <ion-item href="#/app/move" ng-click="startTimeout()">
+          <div class="btn">
+            <h1><div style="width:3px;margin-bottom:-11px;color:blue;">.</div>STARTer WORKOUT</h1>
+          </div>
+        </ion-item> -->
+<!--       </ion-item> -->
+      <!-- <ion-item style="border:2px solid green;background-color:blue;" href="#/app/move">
+        <div class="btn">
+            <h1><div style="width:3px;margin-bottom:-11px;color:blue;">.</div>START WORKOUT</h1>
+          </div>
+ -->
+   <!--    </ion-item>
+      <ion-item class="ad">
+      DETAILS PAGE OF WORKOUT
+  </ion-item> -->
+
+<!-- <p></p>
+<a href="#/app/search"><button style="margin:5px 5px 5px 5px;">One</button></a>
+<button ng-click="choosen(choice.easy);bubble(choice.easyinfo)" style="margin:5px 5px 5px 5px;">Easier</button>
+    <button ng-click="choosen(choice.hard);bubble(choice.hardinfo)" style="margin:5px 5px 5px 5px;">Harder</button> -->
+ 
+<div style="border:2px solid transparent;width:100%;height:100px;font-family:BebasNeue;">
+  <div style="border:0px solid black;width:75%;max-width:350px;margin-right:auto;margin-left:auto;color:white;font-size:30px;margin-top:42px;">
+    
+    <div style="float:left;border:0px solid green;font-size:50px;">
+     <img src="img/time-01.png" style="width:27px;height:27px;">
+    {{bub[1]}} 
+    </div>
+    <div style="float:right;border:0px solid blue;font-size:50px;">
+     
+     <img src="img/cal-01.png" style="width:24px;height:27px;">
+     {{bub[0]}}
+   
+    </div>
+  </div>
+</div>
+
+<div style="width:100%;height:20px;">
+  <div style="width:80%;max-width:325px;margin-right:auto;margin-left:auto;border-top:2px solid white;">
+    <div style="float:right;color:white;margin-bottom:-150px;">
+      {{bub[2]}}  MOVES
+    </div>
+  </div>
+
+</div>
+
+<br>
+
+
+
+<ion-list>
+ <div style="height:40px;margin-left:5%;border-top:1px solid rgba(255,255,255,0.65);" ng-repeat="m in diff track by $index">
+
+     <div ng-click="showMoreDetail($index);" class="animateded slideInUp" style="width:90%;max-width:450px;height:20px;margin-left:auto;margin-right:auto;white:white;font-family:PierSans;">
+<!--           <div style="height:75%;float:left;border:0px solid blue;color:black;">
+            {{$index}}
+          </div> -->
+
+          <div style="width:60%;height:100%;float:left;border:0px solid blue;margin-top:8px;margin-left:5px;font-size:12px;color:white;">
+            {{m.title}}
+          </div>
+
+          <div style="width:25%;height:100%;float:right;border:0px solid black;text-align:right;margin-right:10px;color:black;margin-top:8px;font-size:12px;color:#e5e7e9;;">
+            <b>{{m.reps}}</b>x&nbsp;&nbsp;<b style="color:white;padding-bottom:10px;">...</b>
+          </div>
+    </div>
+
+  </div>
+</ion-list>
+
+
+
+<!-- 
+<ion-list>
+ <ion-item ng-repeat="m in diff track by $index" class="eachitem">
+
+     <div ng-click="showMoreDetail($index);" class="animateded slideInUp" style="width:90%;max-width:450px;height:45px;margin-left:auto;margin-right:auto;background-color:white;border:2px solid {{choice.colorline}};color:red;border-radius:7px;font-family:Geo;">
+          <div style="height:75%;float:left;border:0px solid blue;color:black;">
+            {{$index}}
+          </div>
+
+          <div style="width:40%;height:100%;float:left;border:0px solid blue;margin-top:8px;margin-left:5px;font-size:12px;color:black;">
+            {{m.title}}
+          </div>
+
+          <div style="width:25%;height:100%;float:right;border:0px solid black;text-align:right;margin-right:10px;color:black;margin-top:8px;font-size:13px;color:black;">
+            <b>{{m.reps}}</b>x
+          </div>
+
+    </div>
+
+  </ion-item>
+</ion-list> -->
+
+<!-- <ion-item href="#/app/move">
+TWO Chapter: {{m.title}}  Percent: {{m.price}} Length: {{choice.chapters.length+40}}
+</ion-item>
+
+<ion-item ng-click="pick({{choice}}.easy)">
+EASY {{choice.title}}
+
+</ion-item>
+
+<ion-item ng-click="pick({{choice}}.medium)">
+MEDIUM {{choice.price}} 
+  </ion-item>
+
+  <ion-item ng-click="pick({{choice}}.hard)">
+HARD {{choice.title}}
+  </ion-item>
+
+  <ion-item ng-click="trick(book1)">
+{{choice}}
+  </ion-item> -->
+<!-- 
+ <ion-item ng-repeat="thing in {{mf}}" href="{{thing.url}}">
+        {{thing.title}}
+          <ion-item>{{thing.id}}</ion-item>
+      </ion-item> -->
+
+<div style="border-top:1px solid white;width:95%;max-width:450px;margin-right:auto;margin-left:auto;text-align:center;margin-top:10%;font-size:10px;color:white;">
+<br>
+  <b>Disclamer:</b> Copy P90X disclaimer before working out to make sure no one over does their workout
+
+  {{choice.desc}}
+
+</div>
+
+<div style="border:0px solid black;width:95%;max-width:450px;margin-right:auto;margin-left:auto;text-align:center;margin-top:1%;height:3%;font-size:12px;color:white;font-family:Montserrat;">
+</div>
+
+  </ion-content>
+</ion-view>

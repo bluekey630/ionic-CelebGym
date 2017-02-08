@@ -1,0 +1,120 @@
+<ion-modal-view style="background-color:transparent">
+<!-- <ion-header-bar style="background: transparent;">
+<h1 class="title"><img class="toplogologin" src="img/whitelogoshadow2-01.svg"/></h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closedLogin()">Close</button>
+    </div>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="subLogin()">Modal 2</button>
+    </div>
+  </ion-header-bar>  -->
+  <ion-content has-bouncing="true" scroll="true" class="animated rollIn">
+    <div style="width:100%;height:100%;min-height:560px;border:0px solid blue;background-image:url(img/sliceback-01.png);background-size:100%;">
+
+      <div style="height:10%;border:0px solid yellow;">
+        .
+      </div>
+
+      <div style="height:12%;border:0px solid yellow;">
+        <img src="img/goldlogo-01.png" style="width:20%;height:100%;min-height:65px;margin-left:40%;"/> 
+      </div>
+
+      <div style="height:8%;border:0px solid yellow;">
+        .
+      </div>
+
+      <div style="height:40%;width:90%;margin-left:5%;border:0px solid red;">
+
+        <form ng-submit="doLogin()">
+          <div style="font-family:BebasNeue;font-size:3vh;">
+          <input maxlength="20" style="float:left;margin-left:2.5%;width:45%;border:0px solid white;background:transparent;;font-family:bebasNeue;font-size:5vh;text-align:center;color:white;line-height:150%;" ng-model="loginData.fname">
+          </input> 
+          <input maxlength="20" style="float:left;margin-left:2.5%;width:45%;border:0px solid white;background:transparent;;font-family:bebasNeue;font-size:5vh;text-align:center;color:white;line-height:150%;" ng-model="loginData.lname">
+          </input> 
+          <div style="width:100%;color:white;margin-left:2.5%;">
+            <div style="float:left;margin-top:5%;width:45%;text-align:center;border-top:3px solid black;margin-bottom:10%;">
+              First Name 
+            </div>
+            <div style="float:right;margin-top:5%;width:45%;margin-right:7.5%;text-align:center;border-top:3px solid black;margin-bottom:10%;">
+              Last Name
+            </div>
+          </div>
+
+          <input maxlength="3" style="margin-top:10px;float:left;margin-left:2.5%;width:50%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:9vh;height:85px;text-align:center;color:white;line-height:50%;" 
+          type="tel" ng-model="loginData.weight">
+          </input> 
+
+          <input maxlength="2" style="margin-top:10px;float:right;margin-right:5%;width:30%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:9vh;height:85px;text-align:center;color:white;line-height:50%;" type="tel"  ng-model="loginData.age">
+          </input> 
+
+           <div style="width:100%;color:white;margin-left:2.5%;">
+            <div style="float:left;margin-top:5%;margin-left:2.5%;width:50%;text-align:center;border-top:3px solid black;">      
+              Weight (LBS) 
+            </div>
+            <div style="float:right;margin-top:5%;width:30%;margin-right:7.5%;text-align:center;border-top:3px solid black;">
+               Age
+            </div>
+          </div>
+          </div>
+
+        </form>
+
+      </div>
+
+
+      <div style="position:bottom;width:65%;height:50px;margin-left:17.5%;margin-top:12%;border:0px solid red;border-radius:50px;color:white;text-align:center;font-size:20px;" ng-click="subLogin();"> <img src="img/savebtn22-01.svg" style="width:100%;height:100%;"/>
+      <!-- <button >Save</button> -->
+    </div>
+
+
+
+    </div>
+
+
+
+
+<!-- 
+
+
+  <div  style="border:0px solid black;margin-top:23%;height:5%;background-image:url(img/tilt-01.png);background-size:100% 100%;">
+  </div>
+
+  <div style="width:100%;height:350px;border-bottom:10px solid {{loginData.color}};background-color:white;">
+    <div style="float:left;width:55%;height:30%;margin-top:-20%;margin-left:0%;z-index:100;border:0px solid white;">
+      <img src="{{loginData.image}}" ng-click="genderchanger()" style="margin-top:-60%;width:200px;height:300px;z-index:200;"/>
+    </div>
+    
+    <div style="width:50%;height:25%;margin-top:0%;padding-top:5%;margin-left:50%;z-index:1;border:0px solid blue;font-family:bebasNeue;font-size:130px;color:{{loginData.color}}">{{loginData.fname | limitTo:1}}{{loginData.lname | limitTo:1}}</div>
+    <div style="height:15px;"></div>
+    <div style="width:100%;background-color:white;">
+    <form ng-submit="doLogin()" style="margin-top:5%;">
+      <div class="list" style="font-family:BebasNeue;font-size:15px;">
+          <input maxlength="20" style="float:left;margin-left:2.5%;width:45%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:20px;text-align:center;"  type="text"  ng-model="loginData.fname">
+          <input maxlength="20" style="float:left;margin-left:2.5%;width:45%;border-bottom:0px solid black;background:transparent;;font-family:bebasNeue;font-size:20px;text-align:center;" type="text" ng-model="loginData.lname">
+
+          <div style="width:100%;color:#a5a4a4;margin-left:2.5%;">
+            <div style="float:left;width:45%;text-align:center;border-top:1px solid black;">First Name </div>
+            <div style="float:right;width:45%;margin-right:7.5%;text-align:center;border-top:1px solid black;">Last Name</div>
+          </div>
+
+
+          <input maxlength="3" style="margin-top:10px;float:left;margin-left:2.5%;width:50%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:55px;height:70px;text-align:center;" 
+          type="tel" ng-model="loginData.weight">
+          
+          <input maxlength="2" style="margin-top:10px;float:right;margin-right:5%;width:30%;border-bottom:0px solid black;background:transparent;font-family:bebasNeue;font-size:55px;height:70px;text-align:center;" type="tel"  ng-model="loginData.age">
+
+           <div style="width:100%;color:#a5a4a4;margin-left:2.5%;">
+            <div style="float:left;margin-left:2.5%;width:50%;text-align:center;border-top:1px solid black;">Weight (LBS) </div>
+            <div style="float:right;width:30%;margin-right:7.5%;text-align:center;border-top:1px solid black;">Age</div>
+          </div>
+
+      </div>
+    </form>
+  </div>
+  </div>
+
+    <div style="position:bottom;margin-top:-45px;width:65%;height:50px;margin-left:17.5%;border:0px solid red;border-radius:50px;color:white;text-align:center;font-size:20px;" ng-click="subLogin();"> <img src="img/savebtn22-01.svg" style="width:100%;height:100%;"/>
+    </div> -->
+    
+  </ion-content>
+</ion-modal-view>
