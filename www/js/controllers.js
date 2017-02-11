@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, $ionicPopup, $http, $state, $ionicLoading) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -17,7 +17,141 @@ angular.module('starter.controllers', [])
   //backend server url
   $rootScope.url = "http://192.168.0.125:3000/";
   $rootScope.bLoginStatus = false;
+  $rootScope.loginData.enabledPromocode = false;
+  $rootScope.loginData.isPremiumUser = false;
+  $rootScope.loginData.promoCode = "";
   // Create the login modal that we will use later
+
+  $scope.lockimage = "img/unlock.png";
+
+  $scope.$on("$ionicView.beforeEnter", function () {
+    
+    if ($rootScope.loginData.isPremiumUser) {
+      $scope.lockimage = "img/unlock.png";
+    }
+    else {
+      $scope.lockimage = "img/lock2-01.svg";
+    }
+
+  });
+
+  $scope.goHistory = function() {
+
+    if ($rootScope.loginData.isPremiumUser) {
+      $state.go('app.history');
+    }
+    else {
+      $rootScope.confirmAlert("Upgrade Primium User.", "OK");
+    }
+
+    
+  }
+
+
+  $rootScope.serverConnectAWS = function(mode, user,callback) {
+
+    switch (mode)
+    {
+      case 'login': 
+          var data = {'email' : user.email, 'password' : user.pwd};
+          $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {     
+            var msg = res.data.msg;
+      //      console.log(user.msg);
+            
+            if(msg == 'success') {
+              $rootScope.bLoginStatus = true;
+              //console.log(res); 
+              $rootScope.loginData = JSON.parse(res.data.item);
+              $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
+              $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
+              //console.log($rootScope.loginData);
+           //   $rootScope.saveDataLocalStorage($rootScope.loginData);
+               window.localStorage.setItem(data.email, JSON.stringify(data));
+            }
+            callback(res);
+          });
+          
+          break;
+            
+      case 'signup':
+          var data = {'email' : user.email, 'password' : user.pwd};
+          $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {     
+            var msg = res.data.msg;
+            if(msg == 'success') {
+              $scope.confirmAlert("This Email have already registered.", "RETRY");
+              return null;              
+            } else {
+              $http.post($rootScope.url + 'users',  user).then(function (res) {     
+                if(res.data.msg == 'success') {
+                  $rootScope.loginData = JSON.parse(res.data.item);
+                  $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
+                  $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
+                  window.localStorage.setItem(data.email, JSON.stringify(data));
+                  //console.log($rootScope.loginData);
+                  //$rootScope.saveDataLocalStorage($rootScope.loginData);
+                }
+                callback(res);
+              });
+            }
+          });          
+          break;
+            
+      case 'update': 
+
+          if ($rootScope.bLoginStatus && 
+            $rootScope.loginData.email &&   
+            $rootScope.loginData.email.length > 0) {
+          
+              var data = {'email' : $rootScope.loginData.email,
+                'password' : $rootScope.loginData.password,
+                'fname' : $rootScope.loginData.fname,
+                'lname' : $rootScope.loginData.lname,
+                'weight' : $rootScope.loginData.weight,
+                'age' : $rootScope.loginData.age,
+                'gender' : $rootScope.loginData.gender,
+                'color' : $rootScope.loginData.color,
+                'image' : $rootScope.loginData.image 
+              };
+
+              console.log(data);
+
+              $http.put($rootScope.url + 'users/' + $rootScope.loginData._id,  data).then(function (res) {
+     
+                var msg = res.data.msg;
+      
+                if(msg == 'success') {
+                  // $rootScope.saveDataLocalStorage($rootScope.loginData);
+                  window.localStorage.setItem(data.email, JSON.stringify(data));
+                } else {
+                    $rootScope.confirmAlert(msg, "RETRY");
+                }
+              });
+          }
+          
+          break;
+            
+      case 'delete': 
+          
+          break;
+            
+      default: break
+    }
+
+  }
+
+
+  $rootScope.confirmAlert = function(msg, okText){
+       var alertPopup = $ionicPopup.alert({
+        cssClass: 'myPopup',
+         template: msg,
+         okText: okText, // String (default: 'OK'). The text of the OK button.
+         okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
+       });
+
+       alertPopup.then(function(res) {
+         console.log('Thank you for not eating my delicious ice cream cone');
+       });  
+  }
 
 
   // Triggered in the login modal to close it
@@ -112,46 +246,43 @@ angular.module('starter.controllers', [])
           savedUser = JSON.parse(savedUser);
           var sEmail = savedUser.email,
               sPwd = savedUser.password;
-          if(sEmail === email && pwd === sPwd){
-             $rootScope.bLoginStatus = true; 
+          if(sEmail == email && pwd == sPwd){
+             $rootScope.bLoginStatus = true;
+             $rootScope.loginData = savedUser;//window.localStorage.getItem(email);
+             $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
+             $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
+             console.log($rootScope.loginData); 
           }  
           //console.log(window.localStorage.getItem(email));
                    
-          ($rootScope.bLoginStatus) ? $scope.gotobrowse() : $scope.signinonserver($rootScope.loginData);
+          //($rootScope.bLoginStatus) ? $scope.gotobrowse() : $scope.signinonserver($rootScope.loginData);
+      } else {
+        $rootScope.saveDataLocalStorage = false;
+      }
+
+      if ($rootScope.saveDataLocalStorage) {
+          $scope.gotobrowse();
       } else {
         // confirm user information on server
-        $scope.signinonserver($rootScope.loginData);
+        //$scope.signinonserver($rootScope.loginData);
+
+        $rootScope.serverConnectAWS('login', $rootScope.loginData,function(res){
+          if (res) {
+
+              var msg = res.data.msg;
+
+              if (msg == 'success') {
+                $scope.gotobrowse();
+              } else {
+                $rootScope.confirmAlert(msg, "RETRY");
+              }
+          }
+          //alert(res);
+        });
+        
       }
     }
    
-  };
-
-
-  $scope.saveuseronlocalstorage = function(data) {
-      
-      window.localStorage.setItem(data.email,JSON.stringify(data));
-  
-  };
-
-  $scope.signinonserver = function(user) {
-   
-     var data = {'email' : user.email, 'password' : user.pwd};
-     $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {
-     
-          var msg = res.data.msg;
-      //      console.log(user.msg);
-            
-          if(msg == 'success') {
-              $rootScope.bLoginStatus = true; 
-              $scope.saveuseronlocalstorage(user);
-              $scope.gotobrowse();
-
-          } else {
-
-              $scope.confirmAlert(msg);
-
-          };
-     });
   };
 
   $scope.gotobrowse = function() {
@@ -166,20 +297,7 @@ angular.module('starter.controllers', [])
 
    $scope.gotosignup = function() {
       $state.go('app.signupscreen');
-  };
-
-  $scope.confirmAlert = function(msg){
-       var alertPopup = $ionicPopup.alert({
-        cssClass: 'myPopup',
-         template: msg,
-         okText: 'RETRY', // String (default: 'OK'). The text of the OK button.
-         okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
-       });
-
-       alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone');
-       });  
-  }
+  };  
 
 })
 
@@ -189,8 +307,7 @@ angular.module('starter.controllers', [])
 .controller('SignUpCtrl', function($scope, $ionicPlatform, $state, $rootScope, $ionicPopup, $http) {
 
   $scope.registeuser = function() {
-      var obj = $rootScope.loginData,
-          email = $rootScope.loginData.email,
+      var email = $rootScope.loginData.email,
           pwd = $rootScope.loginData.password, 
           repwd = $rootScope.loginData.repassword;
 
@@ -203,10 +320,21 @@ angular.module('starter.controllers', [])
              //method post , url : users, data:obj
 
             if(tmpUser.email === email) {
-                $scope.confirmAlert("This Email have already registered.");
+                $rootScope.confirmAlert("This Email have already registered.", "RETRY");
             } else {
 
-                $scope.signuponserver(obj);
+                //$scope.signuponserver(obj);
+                //var res = $rootScope.serverConnectAWS('post', $rootScope.loginData);
+                $rootScope.serverConnectAWS('signup', $rootScope.loginData,function(res){
+                  if (res) {
+                    var msg = res.data.msg;
+                    if (msg == 'success') {
+                      $scope.gotomain();
+                    } else {
+                      $rootScope.confirmAlert(msg, "RETRY");
+                    }
+                  }
+                });
             }
 
             // // register user info on localstrage
@@ -217,59 +345,31 @@ angular.module('starter.controllers', [])
    //         console.log(window.localStorage.getItem(email));
           } else {
 
-              $scope.signuponserver(obj);
+              // $scope.signuponserver(obj);
+              $rootScope.serverConnectAWS('signup', $rootScope.loginData,function(res){
+                if (res) {
+                  var msg = res.data.msg;
+                  if (msg == 'success') {
+                    $scope.gotomain();
+                  } else {
+                    $rootScope.confirmAlert(msg, "RETRY");
+                  }
+                }
+              });              
           }
 
           //$scope.gotomain();
       }else{
         if(email == undefined) 
-          $scope.confirmAlert("Empty Email Address.");
+          $rootScope.confirmAlert("Empty Email Address.", "RETRY");
         else if(pwd == undefined)
-          $scope.confirmAlert("Empty Password.");
+          $rootScope.confirmAlert("Empty Password.", "RETRY");
         else if(repwd == undefined)
-          $scope.confirmAlert("Empty Confirm Password.");
+          $rootScope.confirmAlert("Empty Confirm Password.", "RETRY");
         else if(pwd != repwd)
-          $scope.confirmAlert("Password is wrong.");
+          $rootScope.confirmAlert("Password is wrong.", "RETRY");
 
       }
-  };
-
-  $scope.signuponserver = function(user) {
-   
-     var data = {'email' : user.email, 'password' : user.pwd};
-
-     $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {
-     
-          var msg = res.data.msg;
-          if(msg == 'success') {
-
-            $scope.confirmAlert("This Email have already registered.");
-              
-          } else {
-
-              $http.post($rootScope.url + 'users',  user).then(function (res) {
-     
-                var msg = res.data.msg;
-      
-                if(msg == 'success') {
-                  $rootScope.bLoginStatus = true; 
-                  $scope.saveuseronlocalstorage(user);
-                  $scope.gotomain();
-
-                } else {
-
-                  $scope.confirmAlert(msg);
-
-                }
-              });
-          }
-     });     
-  };
-
-  $scope.saveuseronlocalstorage = function(data) {
-      
-      window.localStorage.setItem(data.email,JSON.stringify(data));
-  
   };
 
   $scope.gotomain = function() {
@@ -278,29 +378,12 @@ angular.module('starter.controllers', [])
 
    $scope.gotosignup = function() {
       $state.go('app.signupscreen');
-  };
-
-  $scope.confirmAlert = function(msg){
-       var alertPopup = $ionicPopup.alert({
-        cssClass: 'myPopup',
-         template: msg,
-         okText: 'RETRY', // String (default: 'OK'). The text of the OK button.
-         okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
-       });
-
-       alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone');
-       });  
-  }
+  };  
 
 })
 
 
-
-
-
-
-.controller('MainCtrl', function($scope, $ionicPlatform, $rootScope, $stateParams, $ionicPopup, $ionicModal, $timeout, $state, $ionicHistory) {
+.controller('MainCtrl', function($scope, $ionicPlatform, $rootScope, $stateParams, $ionicPopup, $ionicModal, $timeout, $state, $ionicHistory, $http) {
 // $scope.ctrlCheck="This is the Main Ctrl";
 
 
@@ -455,18 +538,9 @@ $rootScope.genderchanger=function(){
   };
 
    $rootScope.subLogin = function() {
-    if($rootScope.loginData.fname!=="" && $rootScope.loginData.lname!=="" && $rootScope.loginData.weight!=="" && $rootScope.loginData.age!==""){
+    if($rootScope.loginData.fname!="" && $rootScope.loginData.lname!="" && $rootScope.loginData.weight!="" && $rootScope.loginData.age!=""){
         // if($scope.loginData.age[0]) {
-          $scope.modal.hide();
-
-          $timeout(function() {
-            // $scope.modal2.show();loginwho.play();
-            $rootScope.closedLogin();
-          }, 500);
-
-        
-
-
+      $rootScope.serverConnectAWS("update", $rootScope.loginData);     
     }
     else{
       var missingaudiochoice = new Audio(missingaudio[Math.floor(Math.random() * missingaudio.length)]);
@@ -474,11 +548,10 @@ $rootScope.genderchanger=function(){
       $scope.showAlert();
       return;
     }
-
-
   };
 
   $rootScope.saveLogin = function() {
+    
     if($rootScope.loginData.fname!=="" && $rootScope.loginData.lname!=="" && $rootScope.loginData.weight!=="" && $rootScope.loginData.age!==""){
         // if($scope.loginData.age[0]) {
           // $scope.modal.hide();
@@ -486,21 +559,40 @@ $rootScope.genderchanger=function(){
           // $timeout(function() {
           //   $scope.modal2.show();
           // }, 500);
+
+
       $scope.saveAlert();
-
-        
-
-
     }
     else{
+
       $scope.showAlert();
+
       return;
     }
 
 
   };
 
-   $scope.showAlert = function() {
+  $scope.saveuserprofilestorage = function(data) {
+      
+    window.localStorage.setItem(data.email,JSON.stringify(data));
+  
+  };
+
+  $scope.confirmAlert = function(msg) {
+   var alertPopup = $ionicPopup.alert({
+    cssClass: 'myPopup',
+     template: msg,
+     okText: 'Got it', // String (default: 'OK'). The text of the OK button.
+     okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
+   });
+
+   alertPopup.then(function(res) {
+     console.log('Thank you for not eating my delicious ice cream cone');
+   });
+  };
+
+  $scope.showAlert = function() {
    var alertPopup = $ionicPopup.alert({
     cssClass: 'myPopup',
      template: 'Can&#39;t leave anything blank',
@@ -511,10 +603,10 @@ $rootScope.genderchanger=function(){
    alertPopup.then(function(res) {
      console.log('Thank you for not eating my delicious ice cream cone');
    });
- };
+  };
 
 
-    $scope.saveAlert = function() {
+  $scope.saveAlert = function() {
    var alertPopup = $ionicPopup.alert({
     cssClass: 'custompopup',
      okText: 'Updated', // String (default: 'OK'). The text of the OK button.
@@ -524,7 +616,7 @@ $rootScope.genderchanger=function(){
    alertPopup.then(function(res) {
      console.log('Thank you for not eating my delicious ice cream cone');
    });
- };
+  };
 
   //Pop Up Function to confirm choice
   $scope.popUpChoice = function(who, whopic){
@@ -586,7 +678,7 @@ $rootScope.genderchanger=function(){
 //Profile Controller 
 
 
-.controller('ProfileCtrl', function($scope, $state, $stateParams, $ionicHistory, $rootScope, $ionicPopup) {
+.controller('ProfileCtrl', function($scope, $state, $stateParams, $ionicHistory, $rootScope, $ionicPopup, $http) {
 
 // $ionicPlatform.ready(function() {
 //     screen.lockOrientation('landscape');
@@ -597,6 +689,31 @@ $rootScope.genderchanger=function(){
 // })
 var missingaudio = ['img/blank.mp3', 'img/missing.mp3', 'img/missingsomething.mp3'];
 
+$scope.saveLogin = function() {
+    
+    if($rootScope.loginData.fname!=="" && $rootScope.loginData.lname!=="" && $rootScope.loginData.weight!=="" && $rootScope.loginData.age!==""){
+        console.log($rootScope.bLoginStatus);
+
+      $rootScope.serverConnectAWS("update", $rootScope.loginData);      
+
+      //$scope.saveAlert();
+    }
+    else{
+
+      if ($rootScope.loginData.fname == "")
+        $scope.confirmAlert("Empty first name.");
+      else if ($rootScope.loginData.lname == "")
+        $scope.confirmAlert("Empty last name.");
+      else if ($rootScope.loginData.weight == "")
+        $scope.confirmAlert("Empty weight.");
+      else if ($rootScope.loginData.age == "")
+        $scope.confirmAlert("Empty age.");
+
+      return;
+    }
+  };
+
+  
  $scope.showAlert = function() {
    var alertPopup = $ionicPopup.alert({
     cssClass: 'myPopup',
@@ -642,7 +759,7 @@ var missingaudio = ['img/blank.mp3', 'img/missing.mp3', 'img/missingsomething.mp
 
 $scope.genderchange;
 
- $scope.ctrlCheck="ProfileCtrl";
+$scope.ctrlCheck="ProfileCtrl";
 
 $scope.genderchange="img/femaleback2-01.svg";
 $scope.genderplaceholder="Jane";
@@ -774,7 +891,7 @@ $scope.sendFeedback=function(){
 //Premium Page Controller 
 
 
-.controller('PremiumCtrl', function($scope, $rootScope, $stateParams, $state, $timeout, $ionicModal) {
+.controller('PremiumCtrl', function($scope, $rootScope, $stateParams, $state, $timeout, $ionicModal, $http) {
 
   // $scope.bgPremImage="img/prem1-01.jpg";
 
@@ -797,36 +914,48 @@ $scope.sendFeedback=function(){
 
   $scope.checkPromo=function(){
 
-    for (var i=0; i<$scope.promos.length; i++) {
-      if($scope.promo.codetry==$scope.promos[i]){
-        $scope.success="yes";
-      }
-    }
-      if($scope.success!="yes"){
-        $scope.errormessage="Did not match any promo codes";
+    if ($rootScope.loginData.enabledPromocode) {
+      //$rootScope.confirmAlert("You successed on Promo Code.", "OK");
+      $scope.errormessage="You successed on Promo Code.";
 
-        $timeout(function() {
-          $scope.errormessage="";
-        }, 2000); 
-      }
-      else if($scope.success=="yes"){
-
-        $scope.errormessage="Monthly Subscription now only $4.99";
-        $scope.promo.codetry="Success";
-        $scope.price=4.99;
-
-        $timeout(function() {
+      $timeout(function() {
           $scope.closePromo();$scope.errormessage="";
         }, 2500);
+    } else {
 
+      $rootScope.loginData.promoCode = $scope.promo.codetry;
+
+      for (var i=0; i<$scope.promos.length; i++) {
+        if($scope.promo.codetry==$scope.promos[i]){
+          $scope.success="yes";
+        }
       }
+        if($scope.success!="yes"){
+          $scope.errormessage="Did not match any promo codes";
+          $rootScope.loginData.enabledPromocode = false;////Added by Ai//////
+          $timeout(function() {
+            $scope.errormessage="";
+          }, 2000); 
+        }
+        else if($scope.success=="yes"){
+
+          $scope.errormessage="Monthly Subscription now only $4.99";
+          $scope.promo.codetry="Success";
+          $scope.price=4.99;
+          $rootScope.loginData.enabledPromocode = true;////Added by Ai//////
+          $timeout(function() {
+            $scope.closePromo();$scope.errormessage="";
+          }, 2500);
+
+        }
+
+    }
+
+    if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus)
+      $rootScope.serverConnectAWS("update", $rootScope.loginData);
 
 
     // $scope.errormessage="does not match any promo codes";
-
-  
-
-
   }
 
 
@@ -879,20 +1008,11 @@ $scope.sendFeedback=function(){
 })
 
 
-
-
-
-
-
-
-
-
-
 //Male workout controller
 
 
 
-.controller('MaleCtrl', function($scope, $ionicModal, $rootScope, $ionicLoading, $ionicPlatform, $ionicScrollDelegate, $ionicSideMenuDelegate) {
+.controller('MaleCtrl', function($scope, $state, $ionicModal, $rootScope, $ionicLoading, $ionicPlatform, $ionicScrollDelegate, $ionicSideMenuDelegate) {
 
 $scope.testfilter=444;
 $scope.dater = new Date();
@@ -905,13 +1025,13 @@ $scope.stringer = $scope.sdater.toString();
   $scope.$on('$ionicView.enter', function(){
       $ionicSideMenuDelegate.canDragContent(false);
       $rootScope.menucolor="black";
+      $scope.lockProcess();
       screen.lockOrientation('portrait');
-
-    });
+  });
   
   $scope.$on('$ionicView.leave', function(){
       $ionicSideMenuDelegate.canDragContent(true);
-    });
+  });
 
 
   $ionicModal.fromTemplateUrl('templates/detailmove.html', {
@@ -950,23 +1070,74 @@ $scope.additup=function(index){
   $scope.tcal=Math.round($scope.tcal);
 
 }
+
+$scope.lockProcess = function() {
+
+    if (!$rootScope.loginData.isPremiumUser) {
+        $scope.maleworkouts = [
+          { title: 'Rock City',             url:"#/app/details",  id: 1, num:"01",  image: "img/men1.png",        info: "mwd.w1",     caloriesmain:Math.round(0.0175*274*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png",   time:"5:00",   color:"img/11111.png", type:"Full Body"},
+          { title: 'Knockout Club',         url:"#/app/details",  id: 2, num:"02",  image: "img/men2.png",        info: "mwd.w2",     caloriesmain:Math.round(0.0175*293*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png",   time:"5:30",   color:"img/rb.png", type:"Full Body"},
+          { title: 'Comic Crusader',        url:"#/app/details",  id: 3, num:"03",  image: "img/men3.png",        info: "mwd.w3",     caloriesmain:Math.round(0.0175*237*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Arms and Shoulders"},
+          { title: 'The 300',               url:"#/app/search",   id: 4, num:"04",  image: "img/men4.png",        info: "mwd.w4",     caloriesmain:Math.round(0.0175*346*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Abs" },
+          { title: 'Red Magic',             url:"#/app/mworkouts",id: 5, num:"05",  image: "img/men5.png",        info: "mwd.w5",     caloriesmain:Math.round(0.0175*191*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:45",   color:"img/rb.png", type:"Full Body" },
+          { title: 'Hollywood Heartthrob',  url:"#/app/details",  id: 6, num:"06",  image: "img/men6.png",        info: "mwd.w6",     caloriesmain:Math.round(0.0175*267*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Full Body" },
+          { title: 'King Of The Jungle',    url:"#/app/details",  id: 1, num:"07",  image: "img/men7.png",        info: "mwd.w7",     caloriesmain:Math.round(0.0175*270*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png",  type:"Full Body"},
+          { title: 'The Red Shield',        url:"#/app/details",  id: 2, num:"08",  image: "img/men8.png",        info: "mwd.w8",     caloriesmain:Math.round(0.0175*266*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"6:00",   color:"img/rb.png", type:"Upper Body"},
+          { title: 'The Wolverine',         url:"#/app/details",  id: 3, num:"09",  image: "img/men9.png",        info: "mwd.w9",     caloriesmain:Math.round(0.0175*269*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Arms and Shoulders"},
+          { title: 'Achilles',              url:"#/app/search",   id: 4, num:"10",  image: "img/men10.png",       info: "mwd.w10",    caloriesmain:Math.round(0.0175*242*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Full Body" },
+          { title: 'Fist Of Fury',          url:"#/app/mworkouts",id: 5, num:"11",  image: "img/men11.png",       info: "mwd.w11",    caloriesmain:Math.round(0.0175*230*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:45",   color:"img/rb.png", type:"Full Body" }
+        ];
+    } else {
+         $scope.maleworkouts = [
+          { title: 'Rock City',             url:"#/app/details",  id: 1, num:"01",  image: "img/men1.png",        info: "mwd.w1",     caloriesmain:Math.round(0.0175*274*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png",   time:"5:00",   color:"img/11111.png", type:"Full Body"},
+          { title: 'Knockout Club',         url:"#/app/details",  id: 2, num:"02",  image: "img/men2.png",        info: "mwd.w2",     caloriesmain:Math.round(0.0175*293*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png",   time:"5:30",   color:"img/rb.png", type:"Full Body"},
+          { title: 'Comic Crusader',        url:"#/app/details",  id: 3, num:"03",  image: "img/men3.png",        info: "mwd.w3",     caloriesmain:Math.round(0.0175*237*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:00",   color:"img/rb.png", type:"Arms and Shoulders"},
+          { title: 'The 300',               url:"#/app/search",   id: 4, num:"04",  image: "img/men4.png",        info: "mwd.w4",     caloriesmain:Math.round(0.0175*346*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:00",   color:"img/rb.png", type:"Abs" },
+          { title: 'Red Magic',             url:"#/app/mworkouts",id: 5, num:"05",  image: "img/men5.png",        info: "mwd.w5",     caloriesmain:Math.round(0.0175*191*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:45",   color:"img/rb.png", type:"Full Body" },
+          { title: 'Hollywood Heartthrob',  url:"#/app/details",  id: 6, num:"06",  image: "img/men6.png",        info: "mwd.w6",     caloriesmain:Math.round(0.0175*267*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:00",   color:"img/rb.png", type:"Full Body" },
+          { title: 'King Of The Jungle',    url:"#/app/details",  id: 1, num:"07",  image: "img/men7.png",        info: "mwd.w7",     caloriesmain:Math.round(0.0175*270*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:00",   color:"img/rb.png",  type:"Full Body"},
+          { title: 'The Red Shield',        url:"#/app/details",  id: 2, num:"08",  image: "img/men8.png",        info: "mwd.w8",     caloriesmain:Math.round(0.0175*266*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"6:00",   color:"img/rb.png", type:"Upper Body"},
+          { title: 'The Wolverine',         url:"#/app/details",  id: 3, num:"09",  image: "img/men9.png",        info: "mwd.w9",     caloriesmain:Math.round(0.0175*269*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:00",   color:"img/rb.png", type:"Arms and Shoulders"},
+          { title: 'Achilles',              url:"#/app/search",   id: 4, num:"10",  image: "img/men10.png",       info: "mwd.w10",    caloriesmain:Math.round(0.0175*242*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:00",   color:"img/rb.png", type:"Full Body" },
+          { title: 'Fist Of Fury',          url:"#/app/mworkouts",id: 5, num:"11",  image: "img/men11.png",       info: "mwd.w11",    caloriesmain:Math.round(0.0175*230*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:45",   color:"img/rb.png", type:"Full Body" }
+        ];
+    }
+
+}
+
+
+$scope.goDetails = function() {  
+
+  if ($rootScope.choice.title === $scope.mwd.w1.title || $rootScope.choice.title === $scope.mwd.w2.title)
+  {
+    $state.go('app.details');
+  }
+  else {
+    if ($rootScope.loginData.isPremiumUser)
+    {
+      $state.go('app.details');
+    } else {
+      $rootScope.confirmAlert("You are not PremiumUser.","OK");
+    }
+  }
+}
   
   $scope.yessir=12;
 
 
 //Names and details of workouts to be displayed in list form on the main display page 
    $scope.maleworkouts = [
-    { title: 'Rock City',             url:"#/app/details",  id: 1, num:"01",  image: "img/men1.png",        info: "mwd.w1",     caloriesmain:Math.round(0.0175*274*($rootScope.loginData.weight*0.45)),  time:"5:00",   color:"img/11111.png", type:"Full Body"},
-    { title: 'Knockout Club',         url:"#/app/details",  id: 2, num:"02",  image: "img/men2.png",        info: "mwd.w2",     caloriesmain:Math.round(0.0175*293*($rootScope.loginData.weight*0.45)),  time:"5:30",   color:"img/rb.png", type:"Full Body"},
-    { title: 'Comic Crusader',        url:"#/app/details",  id: 3, num:"03",  image: "img/men3.png",        info: "mwd.w3",     caloriesmain:Math.round(0.0175*237*($rootScope.loginData.weight*0.45)),  time:"5:00",color:"img/rb.png", type:"Arms and Shoulders"},
-    { title: 'The 300',               url:"#/app/search",   id: 4, num:"04",  image: "img/men4.png",        info: "mwd.w4",     caloriesmain:Math.round(0.0175*346*($rootScope.loginData.weight*0.45)),   time:"5:00",color:"img/rb.png", type:"Abs" },
-    { title: 'Red Magic',             url:"#/app/mworkouts",id: 5, num:"05",  image: "img/men5.png",        info: "mwd.w5",     caloriesmain:Math.round(0.0175*191*($rootScope.loginData.weight*0.45)),  time:"5:45",color:"img/rb.png", type:"Full Body" },
-    { title: 'Hollywood Heartthrob',  url:"#/app/details",  id: 6, num:"06",  image: "img/men6.png",        info: "mwd.w6",     caloriesmain:Math.round(0.0175*267*($rootScope.loginData.weight*0.45)),  time:"5:00",color:"img/rb.png", type:"Full Body" },
-    { title: 'King Of The Jungle',    url:"#/app/details",  id: 1, num:"07",  image: "img/men7.png",        info: "mwd.w7",     caloriesmain:Math.round(0.0175*270*($rootScope.loginData.weight*0.45)),  time:"5:00", color:"img/rb.png",  type:"Full Body"},
-    { title: 'The Red Shield',        url:"#/app/details",  id: 2, num:"08",  image: "img/men8.png",        info: "mwd.w8",     caloriesmain:Math.round(0.0175*266*($rootScope.loginData.weight*0.45)),  time:"6:00",color:"img/rb.png", type:"Upper Body"},
-    { title: 'The Wolverine',         url:"#/app/details",  id: 3, num:"09",  image: "img/men9.png",        info: "mwd.w9",     caloriesmain:Math.round(0.0175*269*($rootScope.loginData.weight*0.45)),  time:"5:00",color:"img/rb.png", type:"Arms and Shoulders"},
-    { title: 'Achilles',              url:"#/app/search",   id: 4, num:"10",  image: "img/men10.png",       info: "mwd.w10",    caloriesmain:Math.round(0.0175*242*($rootScope.loginData.weight*0.45)),   time:"5:00",color:"img/rb.png", type:"Full Body" },
-    { title: 'Fist Of Fury',          url:"#/app/mworkouts",id: 5, num:"11",  image: "img/men11.png",       info: "mwd.w11",    caloriesmain:Math.round(0.0175*230*($rootScope.loginData.weight*0.45)),  time:"5:45",color:"img/rb.png", type:"Full Body" }
+    { title: 'Rock City',             url:"#/app/details",  id: 1, num:"01",  image: "img/men1.png",        info: "mwd.w1",     caloriesmain:Math.round(0.0175*274*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png",   time:"5:00",   color:"img/11111.png", type:"Full Body"},
+    { title: 'Knockout Club',         url:"#/app/details",  id: 2, num:"02",  image: "img/men2.png",        info: "mwd.w2",     caloriesmain:Math.round(0.0175*293*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png",   time:"5:30",   color:"img/rb.png", type:"Full Body"},
+    { title: 'Comic Crusader',        url:"#/app/details",  id: 3, num:"03",  image: "img/men3.png",        info: "mwd.w3",     caloriesmain:Math.round(0.0175*237*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Arms and Shoulders"},
+    { title: 'The 300',               url:"#/app/search",   id: 4, num:"04",  image: "img/men4.png",        info: "mwd.w4",     caloriesmain:Math.round(0.0175*346*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Abs" },
+    { title: 'Red Magic',             url:"#/app/mworkouts",id: 5, num:"05",  image: "img/men5.png",        info: "mwd.w5",     caloriesmain:Math.round(0.0175*191*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:45",   color:"img/rb.png", type:"Full Body" },
+    { title: 'Hollywood Heartthrob',  url:"#/app/details",  id: 6, num:"06",  image: "img/men6.png",        info: "mwd.w6",     caloriesmain:Math.round(0.0175*267*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Full Body" },
+    { title: 'King Of The Jungle',    url:"#/app/details",  id: 1, num:"07",  image: "img/men7.png",        info: "mwd.w7",     caloriesmain:Math.round(0.0175*270*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png",  type:"Full Body"},
+    { title: 'The Red Shield',        url:"#/app/details",  id: 2, num:"08",  image: "img/men8.png",        info: "mwd.w8",     caloriesmain:Math.round(0.0175*266*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"6:00",   color:"img/rb.png", type:"Upper Body"},
+    { title: 'The Wolverine',         url:"#/app/details",  id: 3, num:"09",  image: "img/men9.png",        info: "mwd.w9",     caloriesmain:Math.round(0.0175*269*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Arms and Shoulders"},
+    { title: 'Achilles',              url:"#/app/search",   id: 4, num:"10",  image: "img/men10.png",       info: "mwd.w10",    caloriesmain:Math.round(0.0175*242*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:00",   color:"img/rb.png", type:"Full Body" },
+    { title: 'Fist Of Fury',          url:"#/app/mworkouts",id: 5, num:"11",  image: "img/men11.png",       info: "mwd.w11",    caloriesmain:Math.round(0.0175*230*($rootScope.loginData.weight*0.45)), lockimage : "img/lock2-01.svg", time:"5:45",   color:"img/rb.png", type:"Full Body" }
   ];
 
   //Audio clips that Rachel says
@@ -2710,13 +2881,15 @@ $scope.malemoves2=[
 
     $scope.pick = function(selectedBook) {
       $rootScope.choice = selectedBook;
+
       console.log(selectedBook);
+
     }
 
 
     $scope.bubble = function(selectedCal) {
       $rootScope.bub = selectedCal;
-      console.log("Bubble");
+      console.log($rootScope.bub);
     }
 
     $scope.choosen = function(selectedChoose) {
@@ -2742,34 +2915,35 @@ $scope.malemoves2=[
 
 
 //Women or Female Ctrl for all Female Workouts
-.controller('WomenCtrl', function($scope, $rootScope, $ionicScrollDelegate, $ionicSideMenuDelegate) {
+.controller('WomenCtrl', function($scope, $state, $rootScope, $ionicScrollDelegate, $ionicSideMenuDelegate) {
 
   $scope.$on('$ionicView.enter', function(){
       $ionicSideMenuDelegate.canDragContent(false);
-    });
+      $scope.lockProcess();
+  });
   
   $scope.$on('$ionicView.leave', function(){
       $ionicSideMenuDelegate.canDragContent(true);
-    });
+  });
   
   $scope.yessir=12;
 
   $scope.additup=function(index){
 
-  $scope.tmet=0;
-  $scope.ttime=0;
-  // $scope.tn=index.length;
+    $scope.tmet=0;
+    $scope.ttime=0;
+    // $scope.tn=index.length;
 
-  for (var i = 0; i < index.length; i++) {
-    $scope.tmet+=index[i].cal;  
-    $scope.ttime+=index[i].time;  
-    //Do something
+    for (var i = 0; i < index.length; i++) {
+      $scope.tmet+=index[i].cal;  
+      $scope.ttime+=index[i].time;  
+      //Do something
+    }
+
+    $scope.tcal=0.0175*$10*($rootScope.loginData.weight*0.45);
+    $scope.tcal=Math.round($scope.tcal);
+
   }
-
-  $scope.tcal=0.0175*$10*($rootScope.loginData.weight*0.45);
-  $scope.tcal=Math.round($scope.tcal);
-
-}
 
 //Names and details of workouts to be displayed in list form on the main display page 
    $scope.femaleworkouts = [
@@ -2786,6 +2960,55 @@ $scope.malemoves2=[
     { title: 'Her Majesty, The Queen',      url:"#/app/mworkouts",id: 5, num:"11",  image: "img/womens11.png",       info: "fwd.f11",    caloriesmain:Math.round(0.0175*170*($rootScope.loginData.weight*0.45)),  time:"5:30",    color:"img/rb.png",     type:"Full Body" }
   ];
 
+  $scope.lockProcess = function() {
+
+    if (!$rootScope.loginData.isPremiumUser) {
+        $scope.femaleworkouts = [
+          { title: 'Scorn',                       url:"#/app/details",  id: 1, num:"01",  image: "img/womens1.png",        info: "fwd.f1",     caloriesmain:Math.round(0.0175*190*($rootScope.loginData.weight*0.45)),  lockimage : "img/unlock.png",  time:"5:00",    color:"img/11111.png",  type:"Full Body"},
+          { title: 'Video Vixen',                 url:"#/app/details",  id: 2, num:"02",  image: "img/womens2.png",        info: "fwd.f2",     caloriesmain:Math.round(0.0175*184*($rootScope.loginData.weight*0.45)),  lockimage : "img/unlock.png",  time:"5:00",    color:"img/rb.png",     type:"Upper Body"},
+          { title: 'Python',                      url:"#/app/details",  id: 3, num:"03",  image: "img/womens3.png",        info: "fwd.f3",     caloriesmain:Math.round(0.0175*157*($rootScope.loginData.weight*0.45)),  lockimage : "img/lock2-01.svg",  time:"5:45",    color:"img/rb.png",     type:"Butt"},
+          { title: 'Malibu Athletics',            url:"#/app/search",   id: 4, num:"04",  image: "img/womens4.png",        info: "fwd.f4",     caloriesmain:Math.round(0.0175*179*($rootScope.loginData.weight*0.45)),  lockimage : "img/lock2-01.svg",  time:"5:45",    color:"img/rb.png",     type:"Full Body" },
+          { title: 'The Country Heart Breaker',   url:"#/app/mworkouts",id: 5, num:"05",  image: "img/womens5.png",        info: "fwd.f5",     caloriesmain:Math.round(0.0175*196*($rootScope.loginData.weight*0.45)),  lockimage : "img/lock2-01.svg",  time:"5:30",    color:"img/rb.png",     type:"Full Body" },
+          { title: 'Brazilian Bombshell',         url:"#/app/details",  id: 6, num:"06",  image: "img/womens6.png",        info: "fwd.f6",     caloriesmain:Math.round(0.0175*192*($rootScope.loginData.weight*0.45)),  lockimage : "img/lock2-01.svg",  time:"5:30",    color:"img/rb.png",     type:"Full Body" },
+          { title: 'Lipliscious',                 url:"#/app/details",  id: 1, num:"07",  image: "img/womens7.png",        info: "fwd.f7",     caloriesmain:Math.round(0.0175*182.5*($rootScope.loginData.weight*0.45)),lockimage : "img/lock2-01.svg",  time:"5:30",      color:"img/rb.png",     type:"Full Body"},
+          { title: 'Viva Glam',                   url:"#/app/details",  id: 2, num:"08",  image: "img/womens8.png",        info: "fwd.f8",     caloriesmain:Math.round(0.0175*184.5*($rootScope.loginData.weight*0.45)),lockimage : "img/lock2-01.svg",  time:"5:30",    color:"img/rb.png",     type:"Butt"},
+          { title: 'XOXO',                        url:"#/app/details",  id: 3, num:"09",  image: "img/womens9.png",        info: "fwd.f9",     caloriesmain:Math.round(0.0175*184.5*($rootScope.loginData.weight*0.45)),lockimage : "img/lock2-01.svg",  time:"6:00",    color:"img/rb.png",     type:"Arms and Shoulders"},
+          { title: 'Keeping Up With The Curves',  url:"#/app/search",   id: 4, num:"10",  image: "img/womens10.png",       info: "fwd.f10",    caloriesmain:Math.round(0.0175*173*($rootScope.loginData.weight*0.45)),  lockimage : "img/lock2-01.svg",  time:"5:45",    color:"img/rb.png",     type:"Butt" },
+          { title: 'Her Majesty, The Queen',      url:"#/app/mworkouts",id: 5, num:"11",  image: "img/womens11.png",       info: "fwd.f11",    caloriesmain:Math.round(0.0175*170*($rootScope.loginData.weight*0.45)),  lockimage : "img/lock2-01.svg",  time:"5:30",    color:"img/rb.png",     type:"Full Body" }
+        ];
+    } else {
+         $scope.femaleworkouts = [
+          { title: 'Scorn',                       url:"#/app/details",  id: 1, num:"01",  image: "img/womens1.png",        info: "fwd.f1",     caloriesmain:Math.round(0.0175*190*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:00",    color:"img/11111.png",  type:"Full Body"},
+          { title: 'Video Vixen',                 url:"#/app/details",  id: 2, num:"02",  image: "img/womens2.png",        info: "fwd.f2",     caloriesmain:Math.round(0.0175*184*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:00",    color:"img/rb.png",     type:"Upper Body"},
+          { title: 'Python',                      url:"#/app/details",  id: 3, num:"03",  image: "img/womens3.png",        info: "fwd.f3",     caloriesmain:Math.round(0.0175*157*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:45",    color:"img/rb.png",     type:"Butt"},
+          { title: 'Malibu Athletics',            url:"#/app/search",   id: 4, num:"04",  image: "img/womens4.png",        info: "fwd.f4",     caloriesmain:Math.round(0.0175*179*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:45",    color:"img/rb.png",     type:"Full Body" },
+          { title: 'The Country Heart Breaker',   url:"#/app/mworkouts",id: 5, num:"05",  image: "img/womens5.png",        info: "fwd.f5",     caloriesmain:Math.round(0.0175*196*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:30",    color:"img/rb.png",     type:"Full Body" },
+          { title: 'Brazilian Bombshell',         url:"#/app/details",  id: 6, num:"06",  image: "img/womens6.png",        info: "fwd.f6",     caloriesmain:Math.round(0.0175*192*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:30",    color:"img/rb.png",     type:"Full Body" },
+          { title: 'Lipliscious',                 url:"#/app/details",  id: 1, num:"07",  image: "img/womens7.png",        info: "fwd.f7",     caloriesmain:Math.round(0.0175*182.5*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:30",      color:"img/rb.png",     type:"Full Body"},
+          { title: 'Viva Glam',                   url:"#/app/details",  id: 2, num:"08",  image: "img/womens8.png",        info: "fwd.f8",     caloriesmain:Math.round(0.0175*184.5*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"5:30",    color:"img/rb.png",     type:"Butt"},
+          { title: 'XOXO',                        url:"#/app/details",  id: 3, num:"09",  image: "img/womens9.png",        info: "fwd.f9",     caloriesmain:Math.round(0.0175*184.5*($rootScope.loginData.weight*0.45)), lockimage : "img/unlock.png", time:"6:00",    color:"img/rb.png",     type:"Arms and Shoulders"},
+          { title: 'Keeping Up With The Curves',  url:"#/app/search",   id: 4, num:"10",  image: "img/womens10.png",       info: "fwd.f10",    caloriesmain:Math.round(0.0175*173*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:45",    color:"img/rb.png",     type:"Butt" },
+          { title: 'Her Majesty, The Queen',      url:"#/app/mworkouts",id: 5, num:"11",  image: "img/womens11.png",       info: "fwd.f11",    caloriesmain:Math.round(0.0175*170*($rootScope.loginData.weight*0.45)),   lockimage : "img/unlock.png", time:"5:30",    color:"img/rb.png",     type:"Full Body" }
+        ];
+    }
+
+  }
+
+  $scope.goDetails = function() {  
+
+    if ($rootScope.choice.title === $scope.fwd.f1.title || $rootScope.choice.title === $scope.fwd.f2.title)
+    {
+      $state.go('app.details');
+    }
+    else {
+      if ($rootScope.loginData.isPremiumUser)
+      {
+        $state.go('app.details');
+      } else {
+        $rootScope.confirmAlert("You are not PremiumUser.","OK");
+      }
+    }
+  }
 
   // All The Moves that can be done in the app such as Push Up Easy, Clap Plyo Push Up Hard, and so on
 
@@ -4546,7 +4769,7 @@ $scope.femalemoves[229]
        $rootScope.totalTime=0; 
     }
 
-        $scope.bubble = function(selectedCal) {
+    $scope.bubble = function(selectedCal) {
       $rootScope.bub = selectedCal;
       console.log("Bubble");
     }
@@ -4617,16 +4840,9 @@ $scope.femalemoves[229]
 
   }
 
-
 })
 
-
-
-
-
-
 // WORK CONTROLLER DOES HANDLES ALL OF THE MOVES AND TIMING
-
 
 .controller('WorkoutCtrl', function($scope, $ionicPopup, $state, $stateParams, $ionicHistory, $ionicModal, $rootScope, $timeout) {
 
@@ -5423,8 +5639,7 @@ $scope.savedata=function(cal,time,title,type){
 
 
 //History Controller
-.controller('HistoryCtrl', function($scope, $ionicPopup, $timeout, $ionicLoading, $state, $stateParams, $ionicHistory, $rootScope, $ionicScrollDelegate) {
-
+.controller('HistoryCtrl', function($scope, $ionicPopup, $timeout, $ionicLoading, $state, $stateParams, $ionicHistory, $rootScope, $ionicScrollDelegate, $http) {
 
 
 
@@ -5437,6 +5652,11 @@ $scope.$on("$ionicView.beforeEnter", function () {
     // $scope.testtable = [[70, 59, 80, 81, 56, 55, 40]];
      $rootScope.menucolor="white";
      $scope.daterange=10;
+     console.log($scope.historyworkouts);
+
+     $rootScope.loginData.historyofworkouts = $scope.historyworkouts;
+     if ($rootScope.bLoginStatus && $rootScope.loginData.email.length>0)
+       $rootScope.serverConnectAWS("update", $rootScope.loginData);
 
     });
 
@@ -5446,12 +5666,6 @@ $scope.$on("$ionicView.afterEnter", function(event, data) {
     //   template: '<p>Loading...</p><ion-spinner></ion-spinner>'
     // });
 });
-
-
-
-
-
-
 
 $scope.octnov="Mar 31";
 
@@ -5568,7 +5782,7 @@ $scope.deserts = [
 $scope.pusher=function(){
 
   $scope.historyofworkouts.push("3/27");
-
+   
 }
 
 
@@ -5663,6 +5877,12 @@ $rootScope.pushnow = function(cal,title,time,type) {
             {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"}
             ];
             $scope.startedontext="Haven't Started";
+/////////////Added by Ai. history update/////////////////////////////////
+            $rootScope.loginData.historyofworkouts = $scope.historyworkouts;
+            if ($rootScope.bLoginStatus && $rootScope.loginData.email.length>0)
+              $rootScope.serverConnectAWS("update", $rootScope.loginData);
+
+///////////////////////////////////
     };
 
   $scope.changeStatus=function(){
@@ -5714,11 +5934,7 @@ var confirmPopup = $ionicPopup.confirm({
 })
 
 
-
-
-
-
-
-
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
+
+

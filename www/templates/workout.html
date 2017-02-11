@@ -8,11 +8,11 @@
 
 <!--The ng-repeat to put all the information into variables div-->
  <div ng-repeat="m in diff track by $index">
-        <div ng-if="meal_index==$index" ng-init="vs(m.time);tracker(m.cal);keepimage(m.vid,m.size);keepprogress(m.time);keeptitle(m.title,m.audiomove,m.audiorep);keeptotalmoves(meal_index,diff.length,m.reps);">
-            <div style="height:80%;width:100%;max-width:600px;border-radius:100px;border:0px solid black;margin-left:auto;margin-right:auto;">
-             <!--   <img ng-src="{{m.img}}" style="width:100%;height:100%;"/> -->
-            </div>
-        </div>
+    <div ng-if="meal_index==$index" ng-init="vs(m.time);tracker(m.cal);keepimage(m.vid,m.size);keepprogress(m.time);keeptitle(m.title,m.audiomove,m.audiorep);keeptotalmoves(meal_index,diff.length,m.reps);">
+      <div style="height:80%;width:100%;max-width:600px;border-radius:100px;border:0px solid black;margin-left:auto;margin-right:auto;">
+       <!--   <img ng-src="{{m.img}}" style="width:100%;height:100%;"/> -->
+      </div>
+    </div>
 </div>
 
 
@@ -29,28 +29,25 @@
     <!--The second bar div-->
     <div class="animatedquick bounceInDown"style="height:60px;width:100%;border:0px solid yellow;position:fixed;" ng-click="hidesimple();">
       <div style="height:10%;min-height:30px;width:100%;text-align:center;color:black;background: transparent;border:0px solid black;margin-top:-5%;margin-left:-1%;"><!--The top bar only div-->
-      <div class="row" style="border:0px solid blue;">
-        <div style="border:0px solid red;font-size:21px;text-align:left;padding-left:2%;" class="col-33">{{titleshow}}<br>{{moverep}}<i style="font-size:14px;">x</i> REPS
-        
-      <p class="animated fadeOut" style="font-size:14px;color:black;">Share with your friends</p>
+        <div class="row" style="border:0px solid blue;">
+          <div style="border:0px solid red;font-size:21px;text-align:left;padding-left:2%;" class="col-33">
+            {{titleshow}}<br>{{moverep}}<i style="font-size:14px;">x</i> REPS        
+            <p class="animated fadeOut" style="font-size:14px;color:black;">Share with your friends</p>
+          </div>
+
+          <div style="border:0px solid red;font-size:72px;padding-top:5%;" class="col-33"><!-- &nbsp;{{startCount}} --></div>
+
+
+          <div style="border:0px solid red;font-size:70px;text-align:right;padding-right:2%;" class="col-33">
+            <br>
+            <p>
+              {{startCount | timeconvert}}
+            </p>
+          </div>          
         </div>
-
-        <div style="border:0px solid red;font-size:72px;padding-top:5%;" class="col-33"><!-- &nbsp;{{startCount}} --></div>
-
-
-        <div style="border:0px solid red;font-size:70px;text-align:right;padding-right:2%;" class="col-33">
-          <br>
-          <p>
-          {{startCount | timeconvert}}
-          </p>
-      </div>
-
-        
-      </div>
-    </div> 
-
-
+      </div> 
     </div>
+    
     <!--The center image/gif div-->
     <div style="height:100%;width:100%;border:0px solid purple;border-radius:100px;margin-left:auto;margin-right:auto;margin-top:-8%;" ng-click="hidesimple();" on-swipe-right="prev()" on-swipe-left="next()">
 
@@ -79,17 +76,17 @@
           
         <div class="{{animationplayer}}" ng-show="!showDetails" style="width:100%;height:69%;min-height:60px;background-image:url(img/backfade-01.png);border:0px solid purple;margin-right:auto;margin-left:auto;padding-top:2px;">
 <!--             <div style="height:100px;background-color:black;z-index:2;color:red;">Hello</div> -->
-                    <button ng-disabled="isDisabled" id='prevbtn' ng-click='prev();progessmove(1);' class="coolbtn" ><img src="img/rewindbtn-01.png" style="width:70px;height:70px;border:0px solid red;border-radius:100px;"/>
-                    </button>
-                    
-                    <button style="border:0px solid blue;display:{{player}};" ng-click='startTimeout();tracking(m.time);changeit();' class="coolbtn"><img src="img/playbtn-01.png" style="width:70px;height:70px;margin-top:5%;border:2px solid {{choice.colorline}};border-radius:100px;"/>
-                    </button>
+              <button ng-disabled="isDisabled" id='prevbtn' ng-click='prev();progessmove(1);' class="coolbtn" ><img src="img/rewindbtn-01.png" style="width:70px;height:70px;border:0px solid red;border-radius:100px;"/>
+              </button>
+              
+              <button style="border:0px solid blue;display:{{player}};" ng-click='startTimeout();tracking(m.time);changeit();' class="coolbtn"><img src="img/playbtn-01.png" style="width:70px;height:70px;margin-top:5%;border:2px solid {{choice.colorline}};border-radius:100px;"/>
+              </button>
 
-                    <button style="display:{{pauser}};" ng-click='stopTimeout();tracking(m.time);changeitagain();modal.show();' class="coolbtn"><img src="img/pausebtn-01.png" style="width:70px;height:70px;margin-top:5%;border:2px solid {{choice.colorline}};border-radius:100px;"/>
-                    </button>
-                   
-                   <button ng-click='next();progessmove(0);' class="coolbtn"><img src="img/fwdbtn-01.png" style="width:70px;height:70px;border:0px solid red;border-radius:100px;"/>
-                   </button>
+              <button style="display:{{pauser}};" ng-click='stopTimeout();tracking(m.time);changeitagain();modal.show();' class="coolbtn"><img src="img/pausebtn-01.png" style="width:70px;height:70px;margin-top:5%;border:2px solid {{choice.colorline}};border-radius:100px;"/>
+              </button>
+             
+             <button ng-click='next();progessmove(0);' class="coolbtn"><img src="img/fwdbtn-01.png" style="width:70px;height:70px;border:0px solid red;border-radius:100px;"/>
+             </button>
 
         </div>
         

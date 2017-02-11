@@ -60,14 +60,14 @@ The Total Time of the workout is {{ttime/60}}<br><br><br>
 
 
 
-<div ng-repeat="workout in femaleworkouts | limitTo : 6 : 0" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo)">
+<div ng-repeat="workout in femaleworkouts | limitTo : 6 : 0" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo);goDetails()">
       
-      <a href="#/app/details" style="border:0px solid #e4e4e4;">
+      <!--a href="#/app/details" style="border:0px solid #e4e4e4;"-->
         <div class="list">
 
-            <a class="item item-thumbnail-left" href="#/app/details" style="border:1px solid rgba(255,255,255,0.25);background-color:black;color:white;">
+            <a class="item item-thumbnail-left" style="border:1px solid rgba(255,255,255,0.25);background-color:black;color:white;">
               <img src="{{workout.image}}" style="height:70%;border:0px solid black;color:white;">
-              <h2 style="color:white;">{{workout.title}}</h2>
+              <h2 style="color:white;">{{workout.title}}&nbsp;&nbsp;<img src="{{workout.lockimage}}" style="width:17px;height:17px;border:0px solid white;float:right;"/></h2>
               <p style="color:white;">{{workout.type}}</p>
               <p style="text-align:right;color:white;"><img src="img/flame-01.svg">&nbsp;&nbsp;{{workout.caloriesmain}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/clock-01.svg" style="padding-top:10px;">&nbsp;&nbsp;{{workout.time}}</p>
             </a>
@@ -170,14 +170,14 @@ OLD LOOKING LIST
 
 
 
-<div ng-repeat="workout in femaleworkouts | limitTo : 5 : 6" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo)">
+<div ng-repeat="workout in femaleworkouts | limitTo : 5 : 6" ng-click="pick({{workout.info}});choosen(choice.easy);bubble(choice.easyinfo);goDetails()">
       
-      <a href="#/app/details" style="border:0px solid #e4e4e4;">
+      <!--a href="#/app/details" style="border:0px solid #e4e4e4;"-->
         <div class="list">
 
-            <a class="item item-thumbnail-left" href="#/app/details" style="border:1px solid rgba(255,255,255,0.25);background-color:black;color:white;">
+            <a class="item item-thumbnail-left" style="border:1px solid rgba(255,255,255,0.25);background-color:black;color:white;">
               <img src="{{workout.image}}" style="height:70%;border:0px solid black;color:white;">
-              <h2 style="color:white;">{{workout.title}}</h2>
+              <h2 style="color:white;">{{workout.title}}&nbsp;&nbsp;<img src="{{workout.lockimage}}" style="width:17px;height:17px;border:0px solid white;float:right;"/></h2>
               <p style="color:white;">{{workout.type}}</p>
               <p style="text-align:right;color:white;"><img src="img/flame-01.svg">&nbsp;&nbsp;{{workout.caloriesmain}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/clock-01.svg" style="padding-top:10px;">&nbsp;&nbsp;{{workout.time}}</p>
             </a>

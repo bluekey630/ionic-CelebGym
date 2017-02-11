@@ -237,6 +237,7 @@ angular.module('starter', ['ionic', 'starter.controllers','starter.filters','cha
     }
   })
 
+  
   .state('app.toc', {
     url: '/toc',
     views: {

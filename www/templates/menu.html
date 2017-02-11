@@ -1,4 +1,4 @@
-<ion-side-menus enable-menu-with-back-views="false">
+<ion-side-menus enable-menu-with-back-views="false"c cache-view="true">
   <ion-side-menu-content>
     <ion-nav-bar id="bb">
       <ion-nav-back-button style="color:white"><!--this is the back button-->
@@ -25,9 +25,9 @@
           Workouts
         </ion-item>
 
-        <ion-item menu-close href="#/app/history">
+        <ion-item menu-close ng-click = "goHistory();"><!--href="#/app/browse"-->
           <i class="ion-ios-pulse-strong" style="padding-left:0px;"></i>&nbsp;&nbsp;
-          History&nbsp;&nbsp; <img src="img/lock2-01.svg" style="width:25px;height:25px;border:0px solid white;"/>
+          History&nbsp;&nbsp; <img src="{{lockimage}}" style="width:25px;height:25px;border:0px solid white;"/>
         </ion-item>
 
 
