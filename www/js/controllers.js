@@ -2889,7 +2889,7 @@ $scope.malemoves2=[
 //FUJION
      $scope.mwd = {
       w1: {
-        title:"Rock City ",
+        title:"Rock City",
         num: "01",
         price: "3.00",
         finishmessage:"Wow, you destroyed that workout!",
@@ -2912,7 +2912,7 @@ $scope.malemoves2=[
 
       },
       w2: {
-        title:"Knockout Club ",
+        title:"Knockout Club",
         num:"02",
         price: "4.00",
         finishmessage:"Keep it up!",
@@ -2934,7 +2934,7 @@ $scope.malemoves2=[
         hard: mw2h
       },
       w3: {
-        title:"Comic Crusader ",
+        title:"Comic Crusader",
         num:"02",
         price: "4.00",
         finishmessage:"Keep getting it and keep sweating it",
@@ -2956,7 +2956,7 @@ $scope.malemoves2=[
         hard: mw3h
       },
       w4: {
-        title:"The 300 ",
+        title:"The 300",
         num:"02",
         price: "4.00",
         finishmessage:"Keep getting it and keep sweating it",
@@ -2978,7 +2978,7 @@ $scope.malemoves2=[
         hard: mw4h
       },
       w5: {
-        title:"Red Magic ",
+        title:"Red Magic",
         num:"02",
         price: "4.00",
         finishmessage:"Keep getting it and keep sweating it",
@@ -3000,7 +3000,7 @@ $scope.malemoves2=[
         hard: mw5h
       },
       w6: {
-        title:"Hollywood Heartthrob ",
+        title:"Hollywood Heartthrob",
         num:"02",
         price: "4.00",
         finishmessage:"Keep getting it and keep sweating it",
@@ -3022,7 +3022,7 @@ $scope.malemoves2=[
         hard: mw6h
       },
       w7: {
-        title:"King Of The Jungle ",
+        title:"King Of The Jungle",
         num:"02",
         price: "4.00",
         finishmessage:"Show off those results and let everyone see your hard work",
@@ -3044,7 +3044,7 @@ $scope.malemoves2=[
         hard: mw7h
       },
       w8: {
-        title:"The Red Shield ",
+        title:"The Red Shield",
         num:"02",
         price: "4.00",
         finishmessage:"Those results deserve sharing",
@@ -3066,7 +3066,7 @@ $scope.malemoves2=[
         hard: mw8h
       },
       w9: {
-        title:"The Wolverine ",
+        title:"The Wolverine",
         num:"02",
         price: "4.00",
         finishmessage:"Those are post worthy numbers",
@@ -3088,7 +3088,7 @@ $scope.malemoves2=[
         hard: mw9h
       },
       w10: {
-        title:"Achilles ",
+        title:"Achilles",
         num:"02",
         price: "4.00",
         finishmessage:"Keep it up!",
@@ -3110,7 +3110,7 @@ $scope.malemoves2=[
         hard: mw10h
       },
       w11: {
-        title:"Fist Of Fury ",
+        title:"Fist Of Fury",
         num:"02",
         price: "4.00",
         finishmessage:"Those results deserve sharing",
