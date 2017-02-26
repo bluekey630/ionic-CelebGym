@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, $ionicPopup, $http, $state, $ionicLoading) {
+.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, $ionicPopup, $http, $state, $ionicLoading, $cordovaGoogleAnalytics) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -14,12 +14,14 @@ angular.module('starter.controllers', [])
   // Form data for the login modal
   $rootScope.loginData = {fname:"",lname:"",weight:"",age:"",gender:"female",color:"#00a6f5", image:"img/1fb-01.png"};
   $rootScope.menucolor="black";//come and change to white later
+  $rootScope.loginData.email = "zhengcheng@outlook.com";
+  $rootScope.loginData.password = "a";
   //backend server url
-  $rootScope.url = "http://192.168.0.125:3000/";
+  $rootScope.url = "http://ec2-54-144-105-136.compute-1.amazonaws.com:3000/";//"http://192.168.0.125:3000/"
   $rootScope.bLoginStatus = false;
   $rootScope.loginData.enabledPromocode = false;
   $rootScope.loginData.isPremiumUser = false;
-  $rootScope.loginData.promoCode = "";
+  
   // Create the login modal that we will use later
 
   $scope.lockimage = "img/unlock.png";
@@ -48,49 +50,102 @@ angular.module('starter.controllers', [])
   }
 
 
-  $rootScope.serverConnectAWS = function(mode, user,callback) {
-
+  $rootScope.serverConnectAWS = function(mode, user, callback) {
+    var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
     switch (mode)
     {
       case 'login': 
           var data = {'email' : user.email, 'password' : user.pwd};
+          
+          $ionicLoading.show({ template: spinner + 'Loading Products...' });
           $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {     
             var msg = res.data.msg;
       //      console.log(user.msg);
-            
+            $ionicLoading.hide();
             if(msg == 'success') {
               $rootScope.bLoginStatus = true;
-              //console.log(res); 
+              console.log(res);
               $rootScope.loginData = JSON.parse(res.data.item);
               $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
               $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
-              //console.log($rootScope.loginData);
-           //   $rootScope.saveDataLocalStorage($rootScope.loginData);
-               window.localStorage.setItem(data.email, JSON.stringify(data));
+              console.log("root scope:"+$rootScope.loginData);
+              
+              //   $rootScope.saveDataLocalStorage($rootScope.loginData);
+               //console.log("save data:"+JSON.stringify($rootScope.loginData));
+               window.localStorage.setItem(data.email, JSON.stringify($rootScope.loginData));
             }
             callback(res);
+          })
+          .catch(function (err) {
+            $ionicLoading.hide();
+            $ionicPopup.alert({
+              title: 'Error',
+              template: 'Network can not connect to server.'
+            });
           });
           
           break;
+
+      case 'forgot': 
+          var data = {'email' : user.email, 'password' : user.password};
+          $ionicLoading.show({ template: spinner + 'Loading Products...' });
+          $http.post($rootScope.url + 'forgot',  data).then(function (res) {     
+            var msg = res.data.msg;
+      //      console.log(user.msg);
+            $ionicLoading.hide();
+            if(msg == 'success') {
+              $rootScope.bLoginStatus = true;
+              console.log(res);
+              $rootScope.loginData = JSON.parse(res.data.item);
+              $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
+              $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
+              console.log("root scope:"+$rootScope.loginData);
+              
+              //   $rootScope.saveDataLocalStorage($rootScope.loginData);
+               //console.log("save data:"+JSON.stringify($rootScope.loginData));
+               window.localStorage.setItem(data.email, JSON.stringify($rootScope.loginData));
+            }
+            callback(res);
+          })
+          .catch(function (err) {
+            $ionicLoading.hide();
+            $ionicPopup.alert({
+              title: 'Error',
+              template: 'Network can not connect to server.'
+            });
+          });
+          break;    
             
       case 'signup':
           var data = {'email' : user.email, 'password' : user.pwd};
+
           $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {     
             var msg = res.data.msg;
             if(msg == 'success') {
               $scope.confirmAlert("This Email have already registered.", "RETRY");
               return null;              
             } else {
-              $http.post($rootScope.url + 'users',  user).then(function (res) {     
+              $ionicLoading.show({ template: spinner + 'Loading Products...' });
+              $http.post($rootScope.url + 'users',  user).then(function (res) {
+                $ionicLoading.hide();     
                 if(res.data.msg == 'success') {
-                  $rootScope.loginData = JSON.parse(res.data.item);
+                  console.log(res.data.item);
+                  //$rootScope.loginData = JSON.parse(res.data.item);
                   $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
                   $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
-                  window.localStorage.setItem(data.email, JSON.stringify(data));
+                  console.log($rootScope.loginData);
+                  window.localStorage.setItem(data.email, JSON.stringify($rootScope.loginData));
                   //console.log($rootScope.loginData);
                   //$rootScope.saveDataLocalStorage($rootScope.loginData);
                 }
                 callback(res);
+              })
+              .catch(function (err) {
+                $ionicLoading.hide();
+                $ionicPopup.alert({
+                  title: 'Error',
+                  template: 'Network can not connect to server.'
+                });
               });
             }
           });          
@@ -102,32 +157,40 @@ angular.module('starter.controllers', [])
             $rootScope.loginData.email &&   
             $rootScope.loginData.email.length > 0) {
           
-              var data = {'email' : $rootScope.loginData.email,
-                'password' : $rootScope.loginData.password,
-                'fname' : $rootScope.loginData.fname,
-                'lname' : $rootScope.loginData.lname,
-                'weight' : $rootScope.loginData.weight,
-                'age' : $rootScope.loginData.age,
-                'gender' : $rootScope.loginData.gender,
-                'color' : $rootScope.loginData.color,
-                'image' : $rootScope.loginData.image 
-              };
+              var data = {};
 
-              console.log(data);
+              for ( var obj in user) {
+                if (obj == "_id") {
+                  continue;
+                }
+                data[obj] = user[obj];
+              }
 
+              //console.log(data);
+              //console.log("I love you!!!!!!!!!!!!!!!!!");  
               $http.put($rootScope.url + 'users/' + $rootScope.loginData._id,  data).then(function (res) {
      
                 var msg = res.data.msg;
       
                 if(msg == 'success') {
-                  // $rootScope.saveDataLocalStorage($rootScope.loginData);
-                  window.localStorage.setItem(data.email, JSON.stringify(data));
+                  //console.log("I love you!!!!!!!!!!!!!!!!!");
+                  //$rootScope.saveDataLocalStorage($rootScope.loginData);
+                  window.localStorage.setItem(data.email, JSON.stringify($rootScope.loginData));
                 } else {
                     $rootScope.confirmAlert(msg, "RETRY");
                 }
               });
           }
           
+          break;
+      case 'promocode':
+          if ($rootScope.bLoginStatus && 
+            $rootScope.loginData.email &&   
+            $rootScope.loginData.email.length > 0) {
+              $http.get($rootScope.url + 'incpcode' + user._id).then(function (res) {                  
+
+              });
+          }
           break;
             
       case 'delete': 
@@ -139,7 +202,7 @@ angular.module('starter.controllers', [])
 
   }
 
-
+ 
   $rootScope.confirmAlert = function(msg, okText){
        var alertPopup = $ionicPopup.alert({
         cssClass: 'myPopup',
@@ -229,40 +292,45 @@ angular.module('starter.controllers', [])
 
 //Login Controller -Input Login Details Screen
 
-.controller('LoginCtrl', function($scope, $state, $rootScope, $ionicHistory, $http, $ionicPopup) {
+.controller('LoginCtrl', function($scope, $state, $rootScope, $ionicHistory, $http, $ionicPopup, $cordovaGoogleAnalytics) {
 
   $scope.confirm = function(){
      
     var bLoginStatus = false,
         email = $rootScope.loginData.email,
         pwd = $rootScope.loginData.password;
+    
+  //      console.log("user:"+ email);//+JSON.stringify($rootScope.loginData));
+    if (email != "" && pwd != "") {
+      
+      // var savedUser = window.localStorage.getItem(email);
+      // //console.log("login:"+savedUser);
+      // if (savedUser != undefined) {
+      //   $rootScope.saveDataLocalStorage = true;
+      //   //confirm user information on localstorage.
+      //     savedUser = JSON.parse(savedUser);
+      //     //console.log(savedUser);
+      //     var sEmail = savedUser.email,
+      //         sPwd = savedUser.password;
+      //     if(sEmail == email && pwd == sPwd){
+      //        //$rootScope.bLoginStatus = true;
 
-    if (email != undefined && pwd != undefined) {
-      
-      var savedUser = window.localStorage.getItem(email);
-      if (savedUser != undefined) {
-      
-        //confirm user information on localstorage.
-          savedUser = JSON.parse(savedUser);
-          var sEmail = savedUser.email,
-              sPwd = savedUser.password;
-          if(sEmail == email && pwd == sPwd){
-             $rootScope.bLoginStatus = true;
-             $rootScope.loginData = savedUser;//window.localStorage.getItem(email);
-             $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
-             $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
-             console.log($rootScope.loginData); 
-          }  
-          //console.log(window.localStorage.getItem(email));
+      //        $rootScope.loginData = savedUser;//window.localStorage.getItem(email);
+      //        $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
+      //        $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
+      //        console.log($rootScope.loginData);
+      //     }  
+      //     //console.log(window.localStorage.getItem(email));
                    
-          //($rootScope.bLoginStatus) ? $scope.gotobrowse() : $scope.signinonserver($rootScope.loginData);
-      } else {
-        $rootScope.saveDataLocalStorage = false;
-      }
+      //     //($rootScope.bLoginStatus) ? $scope.gotobrowse() : $scope.signinonserver($rootScope.loginData);
+      // } else {
+      //   $rootScope.saveDataLocalStorage = false;
+      // }
 
-      if ($rootScope.saveDataLocalStorage) {
-          $scope.gotobrowse();
-      } else {
+      // if ($rootScope.bLoginStatus) {
+      //     //if(typeof analytics !== undefined) {analytics.setUserId($rootScope.loginData.email);console.log("setUserId : OK!");}
+      //     $scope.gotobrowse();
+      // } else {
         // confirm user information on server
         //$scope.signinonserver($rootScope.loginData);
 
@@ -272,6 +340,7 @@ angular.module('starter.controllers', [])
               var msg = res.data.msg;
 
               if (msg == 'success') {
+                if(typeof analytics !== undefined) {analytics.setUserId($rootScope.loginData.email);console.log("setUserId : OK!");}
                 $scope.gotobrowse();
               } else {
                 $rootScope.confirmAlert(msg, "RETRY");
@@ -280,10 +349,48 @@ angular.module('starter.controllers', [])
           //alert(res);
         });
         
-      }
+      //}
     }
    
   };
+
+  $scope.goForgetPassword = function() {
+      $rootScope.loginData.password = "";
+      $rootScope.loginData.repassword = "";
+      $state.go('app.forgotscreen');
+  }
+
+  $scope.forgetpassword = function() {
+      
+      if ($rootScope.loginData.email == "") {
+          $rootScope.confirmAlert("Please input eMail!", "RETRY");
+      } 
+      else if ($rootScope.loginData.password == ""){
+          $rootScope.confirmAlert("Please input password!", "RETRY");
+      }
+      else if ($rootScope.loginData.repassword == "" || $rootScope.loginData.repassword == undefined){
+          $rootScope.confirmAlert("Please input confirm password!", "RETRY");
+      }
+      else if ($rootScope.loginData.password !== $rootScope.loginData.repassword) {
+          $rootScope.confirmAlert("Password is not matched with confirm password!", "RETRY");
+      }
+      else {
+          $rootScope.serverConnectAWS("forgot", $rootScope.loginData, function(res){
+            if (res) {
+
+                var msg = res.data.msg;
+
+                if (msg == 'success') {
+                  if(typeof analytics !== undefined) {analytics.setUserId($rootScope.loginData.email);console.log("setUserId : OK!");}
+                  $scope.gotobrowse();
+                } else {
+                  $rootScope.confirmAlert(msg, "RETRY");
+                }
+            }
+            //alert(res);
+          });
+      }
+  }
 
   $scope.gotobrowse = function() {
 
@@ -295,7 +402,9 @@ angular.module('starter.controllers', [])
         $state.go('app.browse');
   };
 
-   $scope.gotosignup = function() {
+
+
+  $scope.gotosignup = function() {
       $state.go('app.signupscreen');
   };  
 
@@ -323,12 +432,12 @@ angular.module('starter.controllers', [])
                 $rootScope.confirmAlert("This Email have already registered.", "RETRY");
             } else {
 
-                //$scope.signuponserver(obj);
-                //var res = $rootScope.serverConnectAWS('post', $rootScope.loginData);
+                
                 $rootScope.serverConnectAWS('signup', $rootScope.loginData,function(res){
                   if (res) {
                     var msg = res.data.msg;
                     if (msg == 'success') {
+                      if(typeof analytics !== undefined) {analytics.setUserId($rootScope.loginData.email);console.log("setUserId : OK!");}
                       $scope.gotomain();
                     } else {
                       $rootScope.confirmAlert(msg, "RETRY");
@@ -337,12 +446,6 @@ angular.module('starter.controllers', [])
                 });
             }
 
-            // // register user info on localstrage
-            // obj.email = email;
-            // obj.password=pwd;
-
-            // window.localStorage.setItem(email,JSON.stringify(obj));
-   //         console.log(window.localStorage.getItem(email));
           } else {
 
               // $scope.signuponserver(obj);
@@ -350,6 +453,7 @@ angular.module('starter.controllers', [])
                 if (res) {
                   var msg = res.data.msg;
                   if (msg == 'success') {
+                    if(typeof analytics !== undefined) {analytics.setUserId($rootScope.loginData.email);console.log("setUserId : OK!");}
                     $scope.gotomain();
                   } else {
                     $rootScope.confirmAlert(msg, "RETRY");
@@ -573,25 +677,7 @@ $rootScope.genderchanger=function(){
 
   };
 
-  $scope.saveuserprofilestorage = function(data) {
-      
-    window.localStorage.setItem(data.email,JSON.stringify(data));
   
-  };
-
-  $scope.confirmAlert = function(msg) {
-   var alertPopup = $ionicPopup.alert({
-    cssClass: 'myPopup',
-     template: msg,
-     okText: 'Got it', // String (default: 'OK'). The text of the OK button.
-     okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
-   });
-
-   alertPopup.then(function(res) {
-     console.log('Thank you for not eating my delicious ice cream cone');
-   });
-  };
-
   $scope.showAlert = function() {
    var alertPopup = $ionicPopup.alert({
     cssClass: 'myPopup',
@@ -669,10 +755,6 @@ $rootScope.genderchanger=function(){
 
 
 })
-
-
-
-
 
 
 //Profile Controller 
@@ -891,7 +973,7 @@ $scope.sendFeedback=function(){
 //Premium Page Controller 
 
 
-.controller('PremiumCtrl', function($scope, $rootScope, $stateParams, $state, $timeout, $ionicModal, $http) {
+.controller('PremiumCtrl', function($scope, $rootScope, $stateParams, $state, $timeout, $ionicModal, $http, $ionicPopup, $ionicLoading) {
 
   // $scope.bgPremImage="img/prem1-01.jpg";
 
@@ -904,57 +986,235 @@ $scope.sendFeedback=function(){
   $rootScope.promo = {codetry:""};
 
   $scope.premium=function(){
+
     $state.go('app.pricepage');
+
+      
   }
 
   $scope.price=6.99;
+  if ($rootScope.loginData.enabledPromocode) {
+    $scope.price = 4.99;
+  }
+
   $scope.errormessage="";
 
   $scope.promos=["gram","facebook"];
 
+  var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
+  $scope.checkPrimiumUser = function() {
+
+      var productIds = ['com.ionicframework.celebgym890630.enabled.premiumuser', 'com.ionicframework.celebgym890630.disabledpremiumuser']; // <- Add your product Ids here
+
+      
+      $ionicLoading.show({ template: spinner + 'Loading Products...' });
+      inAppPurchase
+          .getProducts(productIds)
+          .then(function (products) {
+            $ionicLoading.hide();
+            $scope.products = products;
+            console.log("success=====>"+JSON.stringify($scope.products));
+            if ($rootScope.loginData.enabledPromocode)
+            {
+              console.log("You are enabled promo code.");
+              $scope.buy(productIds[0]);
+
+            }  
+            else
+            {
+              console.log("You are not enabled promo code.");
+              $scope.buy(productIds[1]);
+            }
+          })
+          .catch(function (err) {
+            $ionicLoading.hide();
+            console.log("Error======>"+err);
+          });
+
+
+      // inAppPurchase
+      // .buy(productId[0])
+      // .then(function (data) {
+      //   console.log(JSON.stringify(data));
+      //   console.log('consuming transactionId: ' + data.transactionId);
+      //   return inAppPurchase.consume(data.type, data.receipt, data.signature);
+      // })
+      // .then(function () {
+      //   var alertPopup = $ionicPopup.alert({
+      //     title: 'Purchase was successful!',
+      //     template: 'Check your console log for the transaction data'
+      //   });
+      //   console.log('consume done!');
+      //   $ionicLoading.hide();
+      // })
+      // .catch(function (err) {
+      //   $ionicLoading.hide();
+      //   console.log(err);
+      //   $ionicPopup.alert({
+      //     title: 'Something went wrong',
+      //     template: 'Check your console log for the error details'
+      //   });
+      // });
+      //console.log($scope.products);
+
+      // var confirmPopup = $ionicPopup.confirm({
+      //    cssClass: "myPopup",
+      //    template: 'Are you sure you want to upgrade?',
+      //    cancelText: 'No', // String (default: 'Cancel'). The text of the Cancel button.
+      //    cancelType: 'button button-dark', // String (default: 'button-default'). The type of the Cancel button.
+      //    okText: 'Yes', // String (default: 'OK'). The text of the OK button.
+      //    okType: 'button button-balanced', // String (default: 'button-positive'). The type of the OK button.
+      //  });
+
+      //  confirmPopup.then(function(res) {
+      //    if(res) {
+      //         var productIds = []; // <- Add your product Ids here
+
+      //         var spinner = '<ion-spinner icon="dots" class="spinner-stable"></ion-spinner><br/>';
+      //         $ionicLoading.show({ template: spinner + 'Loading Products...' });
+      //         inAppPurchase
+      //             .getProducts(productIds)
+      //             .then(function (products) {
+      //               $ionicLoading.hide();
+      //               $scope.products = products;
+      //             })
+      //             .catch(function (err) {
+      //               $ionicLoading.hide();
+      //               console.log(err);
+      //             });
+              
+
+
+      //         // if ($rootScope.loginData.enabledPromocode) {
+      //         //     window.inAppPurchase.buy('com.ionicframework.celebgym890630.general.premiumuser').then((res) => {
+      //         //       console.log('purchase completed!');
+      //         //       console.log('You are Premium User.');
+      //         //       $rootScope.loginData.isPremiumUser = true;
+      //         //       if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus) {
+      //         //         $rootScope.serverConnectAWS("update", $rootScope.loginData);                      
+      //         //       }
+      //         //         // unlock level 1
+      //         //     })
+      //         //     .catch(err => {
+      //         //       console.log(err);
+      //         //     });
+
+      //         // } else {
+      //         //     window.inAppPurchase.buy('com.ionicframework.celebgym890630.promos.premiumuser').then((res) => {
+      //         //       console.log('purchase completed!');
+      //         //       console.log('You are Premium User.');
+      //         //       $rootScope.loginData.isPremiumUser = true;
+      //         //       if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus) {
+      //         //         $rootScope.serverConnectAWS("update", $rootScope.loginData);                      
+      //         //       }
+      //         //         // unlock level 1
+      //         //     })
+      //         //     .catch(err => {
+      //         //       console.log(err);
+      //         //     });  
+
+      //         // }          
+      //    } 
+      //    else {
+      //      //console.log('You are not PremiumUser.');
+      //      //$rootScope.loginData.isPremiumUser = false;
+      //      //dontendvoice.play();
+      //    }
+      //  });
+
+  }
+
+  $scope.buy = function (productId) {
+
+    $ionicLoading.show({ template: spinner + 'Purchasing...' });
+    inAppPurchase
+      .buy(productId)
+      .then(function (data) {
+        console.log(JSON.stringify(data));
+        console.log('consuming transactionId: ' + data.transactionId);
+        return inAppPurchase.consume(data.type, data.receipt, data.signature);
+      })
+      .then(function () {
+        // var alertPopup = $ionicPopup.alert({
+        //   title: 'Purchase was successful!',
+        //   template: 'Check your console log for the transaction data'
+        // });
+        console.log('consume done!');
+        $rootScope.loginData.isPremiumUser = true;
+        if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus) {
+          $rootScope.serverConnectAWS("update", $rootScope.loginData);                      
+        }
+        $ionicLoading.hide();
+      })
+      .catch(function (err) {
+        $ionicLoading.hide();
+        console.log(err);
+        // $ionicPopup.alert({
+        //   title: 'Something went wrong',
+        //   template: 'Check your console log for the error details'
+        // });
+      });
+
+  };
+
   $scope.checkPromo=function(){
 
-    if ($rootScope.loginData.enabledPromocode) {
-      //$rootScope.confirmAlert("You successed on Promo Code.", "OK");
-      $scope.errormessage="You successed on Promo Code.";
+    console.log($rootScope.loginData.promocodes);
 
-      $timeout(function() {
-          $scope.closePromo();$scope.errormessage="";
-        }, 2500);
+    if ($rootScope.loginData.promocodes == undefined) {
+      $scope.price = 4.99;
+      $rootScope.confirmAlert("PromoCode is not defined.");
+
     } else {
 
-      $rootScope.loginData.promoCode = $scope.promo.codetry;
+        $scope.promos = $rootScope.loginData.promocodes;
 
-      for (var i=0; i<$scope.promos.length; i++) {
-        if($scope.promo.codetry==$scope.promos[i]){
-          $scope.success="yes";
-        }
-      }
-        if($scope.success!="yes"){
-          $scope.errormessage="Did not match any promo codes";
-          $rootScope.loginData.enabledPromocode = false;////Added by Ai//////
+        console.log("promo code array:" + $scope.promos);
+
+        if ($rootScope.loginData.enabledPromocode) {
+          //$rootScope.confirmAlert("You successed on Promo Code.", "OK");
+          $scope.errormessage="You successed on Promo Code.";
+
           $timeout(function() {
-            $scope.errormessage="";
-          }, 2000); 
-        }
-        else if($scope.success=="yes"){
+              $scope.closePromo();$scope.errormessage="";
+            }, 2500);
+        } else {
 
-          $scope.errormessage="Monthly Subscription now only $4.99";
-          $scope.promo.codetry="Success";
-          $scope.price=4.99;
-          $rootScope.loginData.enabledPromocode = true;////Added by Ai//////
-          $timeout(function() {
-            $scope.closePromo();$scope.errormessage="";
-          }, 2500);
+          //$rootScope.loginData.savedPromoCode = $scope.promo.codetry;
+          var code_id = null;
+          for (var i=0; i<$scope.promos.length; i++) {
+            if($scope.promo.codetry==$scope.promos[i].code){
+              $scope.success="yes";
+              code_id = $scope.promos[i].code._id;
+              break;
+            }
+          }
 
-        }
+          if($scope.success!="yes"){
+            $scope.errormessage="Did not match any promo codes";
+            $rootScope.loginData.enabledPromocode = false;////Added by Ai//////
+            $timeout(function() {
+              $scope.errormessage="";
+            }, 2000); 
+          }
+          else if($scope.success=="yes"){
 
+            $scope.errormessage="Monthly Subscription now only $4.99";
+            $scope.promo.codetry="Success";
+            $scope.price=4.99;
+            $rootScope.loginData.enabledPromocode = true;////Added by Ai//////
+            if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus) {
+              $rootScope.serverConnectAWS("update", $rootScope.loginData);
+              $rootScope.serverConnectAWS("promocode", code_id);
+            }
+            $timeout(function() {
+              $scope.closePromo();$scope.errormessage="";
+            }, 2500);
+
+          }
+
+        }        
     }
-
-    if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus)
-      $rootScope.serverConnectAWS("update", $rootScope.loginData);
-
-
     // $scope.errormessage="does not match any promo codes";
   }
 
@@ -5184,7 +5444,7 @@ $scope.muteMe=function(){
 
 
 
-.controller('QuoteCtrl', function($scope, $state, $rootScope, $stateParams,$timeout, $ionicPlatform, $cordovaInstagram, $cordovaSocialSharing) {
+.controller('QuoteCtrl', function($scope, $state, $rootScope, $stateParams,$timeout, $ionicPlatform, $cordovaInstagram, $cordovaSocialSharing, $cordovaGoogleAnalytics) {
     
 
       $scope.ctrlCheck="This is the QUOTE Ctrl";
@@ -5234,54 +5494,57 @@ $scope.muteMe=function(){
 // }
 
 
-function getBase64Image(url) {
-var image = new Image();
-image.setAttribute('crossOrigin', 'anonymous');
-image.onload = function(e) {
-  var canvas = document.createElement('canvas');
-  var ctx = canvas.getContext("2d");
-  canvas.width = this.width;
-  canvas.height = this.height;
-  ctx.drawImage(image, 0, 0, image.width, image.height);
-  console.log(canvas.toDataURL());
-  return(canvas.toDataURL());
-};
-image.src = url;
-}
-
-
-$scope.shareNative=function(text,image,link){
-
-  $ionicPlatform.ready(function() {
-
-      $cordovaSocialSharing
-    .share(text, null, image, "http://www.gogatherapp.com") // Share via native share sheet
-    .then(function(result) {
-      // Success!
-      console.log("Native Sharing success");
-    }, function(err) {
-      // An error occured. Show a message to the user
-      console.log("Native Sharing did not work");
-    });
-
- 
-    })
+  function getBase64Image(url) {
+    var image = new Image();
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.onload = function(e) {
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext("2d");
+      canvas.width = this.width;
+      canvas.height = this.height;
+      ctx.drawImage(image, 0, 0, image.width, image.height);
+      console.log(canvas.toDataURL());
+      return(canvas.toDataURL());
+    };
+    image.src = url;
   }
 
-    $scope.shareFbBtn=function(text,imagelink){
 
-  $ionicPlatform.ready(function() {
-      // Vibrate 2000ms
+  $scope.shareNative=function(text,image,link){
 
-    $cordovaSocialSharing.shareViaFacebook(text, imagelink,"http://www.gogatherapp.com").then(function(result) {
-      // Success!
-      console.log("FB success");
-    }, function(err) {
-      // An error occurred. Show a message to the user
-      console.log("Facebook share did not work");
-    });
+     $ionicPlatform.ready(function() {
 
- 
+        $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, image, null).then(function(result) {
+          // Success!
+          console.log("Instagram success");
+        }, function(err) {
+          // An error occurred. Show a message to the user
+          console.log("Instagram share did not work");
+        });
+
+      
+      //window.plugins.socialsharing.shareViaInstagram('Message via Instagram', 'https://www.google.nl/images/srpr/logo4w.png', function() {console.log('share ok')}, function(errormsg){alert(errormsg)})
+       
+     })
+     
+
+    
+  }
+
+  $scope.shareFbBtn=function(text,imagelink){
+
+    $ionicPlatform.ready(function() {
+        // Vibrate 2000ms
+
+      $cordovaSocialSharing.shareViaFacebook(text, imagelink,"http://www.gogatherapp.com").then(function(result) {
+        // Success!
+        console.log("FB success");
+      }, function(err) {
+        // An error occurred. Show a message to the user
+        console.log("Facebook share did not work");
+      });
+
+   
     })
   }
 
@@ -5386,41 +5649,33 @@ $scope.shareNative=function(text,image,link){
     });
 
 
-$scope.shareInstagramBtn=function(text,imagelink){
-  $ionicPlatform.ready(function() {
-      // Vibrate 2000ms
+  $scope.shareInstagramBtn=function(text,imagelink){
+    $ionicPlatform.ready(function() {
 
-      $cordovaSocialSharing
-.canShareVia(text, imagelink,"https://www.google.nl/images/srpr/logo4w.png").then(function() {
-        // Worked
-        console.log("Instagram success");
-      }, function(err) {
-        // Didn't work
-        console.log("Instagram did not work!");
-      });
-
- 
-    })
-}
-
-
-
-
+        
+      $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, imagelink, null).then(function(result) {
+          // Success!
+          console.log("Instagram success");
+        }, function(err) {
+          // An error occurred. Show a message to the user
+          console.log("Instagram share did not work");
+        });
+     })
+  }
 
 
   $scope.shareFbBtn=function(text,imagelink){
 
-  $ionicPlatform.ready(function() {
+    $ionicPlatform.ready(function() {
       // Vibrate 2000ms
 
-    $cordovaSocialSharing.shareViaFacebook(text, imagelink,null).then(function(result) {
-      // Success!
-      console.log("FB success");
-    }, function(err) {
-      // An error occurred. Show a message to the user
-      console.log("Facebook share did not work");
-    });
-
+      $cordovaSocialSharing.shareViaFacebook(text, imagelink,null).then(function(result) {
+        // Success!
+        console.log("FB success");
+      }, function(err) {
+        // An error occurred. Show a message to the user
+        console.log("Facebook share did not work");
+      });
  
     })
   }
@@ -5430,7 +5685,7 @@ $scope.shareInstagramBtn=function(text,imagelink){
   $ionicPlatform.ready(function() {
       // Vibrate 2000ms
 
-    $cordovaSocialSharing.shareViaTwitter("Twitter works now", "http://gogatherapp.com/images/men10.png", "http://www.gogatherapp.com").then(function(result) {
+    $cordovaSocialSharing.shareViaTwitter("Twitter works now", imagelink, "http://www.gogatherapp.com").then(function(result) {
       // Success!
       console.log("Twitter Success");
     }, function(err) {
@@ -5449,9 +5704,13 @@ $scope.clearbackhistory = function() {
             $ionicHistory.nextViewOptions({
                 historyRoot: true
               });//how to eliminate back button
-
-            $state.go('app.history', {reload: true});
-            console.log("REFRESHED");
+            if ($rootScope.loginData.isPremiumUser) {
+              $state.go('app.history', {reload: true});
+              console.log("REFRESHED");
+            } else {
+              $rootScope.confirmAlert("Upgrade Premium User.", "OK");
+            }
+            
     };
 
 $scope.clearbackhome = function() {
@@ -5621,23 +5880,6 @@ $scope.savedata=function(cal,time,title,type){
 })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //History Controller
 .controller('HistoryCtrl', function($scope, $ionicPopup, $timeout, $ionicLoading, $state, $stateParams, $ionicHistory, $rootScope, $ionicScrollDelegate, $http) {
 
@@ -5651,20 +5893,18 @@ $scope.$on("$ionicView.beforeEnter", function () {
     // $scope.newtable = [[30, 59, 80, 81, 56, 55, 40]];
     // $scope.testtable = [[70, 59, 80, 81, 56, 55, 40]];
      $rootScope.menucolor="white";
-     $scope.daterange=10;
-     console.log($scope.historyworkouts);
+     $scope.daterange=10;  
 
-     $rootScope.loginData.historyofworkouts = $scope.historyworkouts;
-     if ($rootScope.bLoginStatus && $rootScope.loginData.email.length>0)
-       $rootScope.serverConnectAWS("update", $rootScope.loginData);
+      
 
-    });
+});
 
 $scope.$on("$ionicView.afterEnter", function(event, data) {
   window.dispatchEvent(new Event('resize'));
     //   $ionicLoading.show({
     //   template: '<p>Loading...</p><ion-spinner></ion-spinner>'
     // });
+           
 });
 
 $scope.octnov="Mar 31";
@@ -5765,18 +6005,7 @@ $scope.deserts = [
     { title: 'Pumpkin Pie', url:"#/app.mworkouts", id: 7}
   ];
 
-  $scope.historyworkouts = [
-    // { title: 'Kim Kardashian Workout', time:1500 ,cal: 376, date: 1989, type:'Full Body'},
-    // { title: 'Tim Workout', time:1100 ,cal: 20, date: 2016, type:'Legs'},
-    // { title: 'John Workout', time:500 ,cal: 190, date: 2016-03-09, type:'Butt' },
-    // { title: '4th Workout', time:500 ,cal: 190, date: 2016-03-12 , type:'Chest/Back'},
-    // { title: '5th Workout', time:500 ,cal: 190, date: 2016-04-15 },
-    // { title: 'Spartant Workout', time:500 ,cal: 190, date: 2016-05-13 },
-    // { title: 'Yeah Workout', time:500 ,cal: 190, date: 01232016 },
-    // { title: 'Come On Workout', time:500 ,cal: 190, date: 01232016 },
-    // { title: 'Index 8 Workout', time:500 ,cal: 190, date: 01232016 },
-    // { title: 'Num 10 but Index 9 Workout', time:4500 ,cal: 900, date: 01222016 }
-  ];
+
 
 
 $scope.pusher=function(){
@@ -5812,12 +6041,34 @@ $scope.testlabel="3/16";
 
 
   
-  $scope.labels = ["start"];
-  $scope.series = [];
-  $scope.data = [
-    [65, 59, 80, 81, 56, 55, 40,100]
-  ];
+$scope.labels = ["start"];
+$scope.series = [];
+$scope.data = [
+  [65, 59, 80, 81, 56, 55, 40,100]
+];
 
+$scope.historyworkouts = [];
+
+  /*[
+    // { title: 'Kim Kardashian Workout', time:1500 ,cal: 376, date: 1989, type:'Full Body'},
+    // { title: 'Tim Workout', time:1100 ,cal: 20, date: 2016, type:'Legs'},
+    // { title: 'John Workout', time:500 ,cal: 190, date: 2016-03-09, type:'Butt' },
+    // { title: '4th Workout', time:500 ,cal: 190, date: 2016-03-12 , type:'Chest/Back'},
+    // { title: '5th Workout', time:500 ,cal: 190, date: 2016-04-15 },
+    // { title: 'Spartant Workout', time:500 ,cal: 190, date: 2016-05-13 },
+    // { title: 'Yeah Workout', time:500 ,cal: 190, date: 01232016 },
+    // { title: 'Come On Workout', time:500 ,cal: 190, date: 01232016 },
+    // { title: 'Index 8 Workout', time:500 ,cal: 190, date: 01232016 },
+    // { title: 'Num 10 but Index 9 Workout', time:4500 ,cal: 900, date: 01222016 }
+  ];*/
+
+if ($rootScope.loginData.historyofworkouts != undefined) {
+   $scope.historyworkouts = $rootScope.loginData.historyofworkouts;
+   for (var i = 0; i < $scope.historyworkouts.length; i++) {
+       $scope.testtable[0].push($scope.historyworkouts[i].cal);
+       $scope.labels.push($scope.historyworkouts[i].date);
+   }
+}
 
 $rootScope.pushnow = function(cal,title,time,type) {
 
@@ -5853,11 +6104,20 @@ $rootScope.pushnow = function(cal,title,time,type) {
               $scope.labels.push($scope.resdate);
             }
 
-
-
-            $scope.historyworkouts.unshift({'title':title,'cal':cal,'time':time,'date':$scope.resdate, 'type':type});
+            if ($rootScope.loginData.historyofworkouts != undefined)
+              $scope.historyworkouts = $rootScope.loginData.historyofworkouts;
+            $scope.historyworkouts.push({'title':title,'cal':cal,'time':time,'date':$scope.resdate, 'type':type});
             $scope.data.push(cal);
             $scope.startedontext="Started On";
+
+            $rootScope.loginData.historyofworkouts = $scope.historyworkouts;
+            console.log($rootScope.loginData);
+            
+            if ($rootScope.bLoginStatus && $rootScope.loginData.email.length>0) {
+                console.log("I love you!!!!!!!!!!!!!!!!!");
+                $rootScope.serverConnectAWS("update", $rootScope.loginData);
+            }
+            
     };
 
 
@@ -5876,9 +6136,11 @@ $rootScope.pushnow = function(cal,title,time,type) {
             {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"},
             {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"}
             ];
+
             $scope.startedontext="Haven't Started";
 /////////////Added by Ai. history update/////////////////////////////////
             $rootScope.loginData.historyofworkouts = $scope.historyworkouts;
+            console.log($rootScope.loginData);
             if ($rootScope.bLoginStatus && $rootScope.loginData.email.length>0)
               $rootScope.serverConnectAWS("update", $rootScope.loginData);
 
@@ -5936,5 +6198,4 @@ var confirmPopup = $ionicPopup.confirm({
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
-
 

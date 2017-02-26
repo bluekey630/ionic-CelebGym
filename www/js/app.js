@@ -4,9 +4,11 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers','starter.filters','chart.js','ngCordova','ngCordova.plugins.instagram'])
 
-.run(function($ionicPlatform) {
+
+angular.module('starter', ['ionic', 'starter.controllers','starter.filters','chart.js','ngCordova','ngCordova.plugins.instagram', 'credit-cards'])
+
+.run(function($ionicPlatform, $ionicPopup, $cordovaGoogleAnalytics) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -19,6 +21,22 @@ angular.module('starter', ['ionic', 'starter.controllers','starter.filters','cha
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
+    
+    if (window.cordova && window.cordova.InAppBrowser) {
+        window.open = cordova.InAppBrowser.open;
+    }
+    
+    if(typeof analytics !== undefined) {
+        console.log(analytics);
+        analytics.startTrackerWithId("UA-91977093-1"); // you must insert your UA code.(UA-91977093-1)
+        //analytics.tracView("whatever");
+
+        console.log("starting analytics");
+    } else {
+        console.log("Google Analytics Unavailable");
+    }
+    
+    
   });
 })
 
@@ -53,8 +71,18 @@ angular.module('starter', ['ionic', 'starter.controllers','starter.filters','cha
       }
     })
 
+    .state('app.forgotscreen', {
+      url: '/forgotscreen',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/forgotscreen.html',
+          controller: 'LoginCtrl'
+        }
+      }
+    })
 
-      .state('app.signupscreen', {
+
+    .state('app.signupscreen', {
       url: '/signupscreen',
       views: {
         'menuContent': {
@@ -237,7 +265,7 @@ angular.module('starter', ['ionic', 'starter.controllers','starter.filters','cha
     }
   })
 
-  
+
   .state('app.toc', {
     url: '/toc',
     views: {
