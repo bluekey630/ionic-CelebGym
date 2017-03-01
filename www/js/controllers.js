@@ -66,7 +66,8 @@ angular.module('starter.controllers', [])
     $state.go('app.privacy');
   }
 
-  $rootScope.serverConnectAWS = function(mode, user, callback) {
+
+   $rootScope.serverConnectAWS = function(mode, user, callback) {
     var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
     switch (mode)
     {
@@ -315,7 +316,14 @@ angular.module('starter.controllers', [])
 
 })
 
+.controller('BrowseCtrl', function($scope, $state, $rootScope, $ionicHistory, $http, $ionicPopup, $cordovaGoogleAnalytics, $ionicLoading) {
 
+ $scope.showSpiner = function() {
+    var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
+    $ionicLoading.show({ template: spinner + 'Loading Products...' });
+  };
+
+})
 //Login Controller -Input Login Details Screen
 
 .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicHistory, $http, $ionicPopup, $cordovaGoogleAnalytics) {
@@ -518,7 +526,7 @@ angular.module('starter.controllers', [])
 })
 
 
-.controller('MainCtrl', function($scope, $ionicPlatform, $rootScope, $stateParams, $ionicPopup, $ionicModal, $timeout, $state, $ionicHistory, $http) {
+.controller('MainCtrl', function($scope, $ionicPlatform, $rootScope, $stateParams, $ionicPopup, $ionicModal, $timeout, $state, $ionicHistory, $http, $ionicLoading) {
 // $scope.ctrlCheck="This is the Main Ctrl";
 
 
@@ -526,6 +534,7 @@ angular.module('starter.controllers', [])
   //             // Vibrate 2000ms
   //      $cordovaScreenOrientation.lockOrientation('landscape');  
   // });
+  
 
   $rootScope.loginData.image="img/1fb2-01.png";
   $rootScope.firsttime=0;
@@ -1041,6 +1050,14 @@ $scope.logout = function() {
   var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
   $scope.checkPrimiumUser = function() {
 
+      if ($rootScope.loginData.isPremiumUser) {
+        $ionicPopup.alert({
+          title: 'Warning',
+          template: 'You are already PremiumUser!'
+        });
+        return;
+      }
+
       var productIds = ['com.ionicframework.celebgym890630.enabled.premiumuser', 'com.ionicframework.celebgym890630.disabledpremiumuser']; // <- Add your product Ids here
 
       
@@ -1320,6 +1337,7 @@ $scope.sdater = $scope.day+"/"+$scope.monthly;
 $scope.stringer = $scope.sdater.toString();
 
   $scope.$on('$ionicView.enter', function(){
+      $ionicLoading.hide();
       $ionicSideMenuDelegate.canDragContent(false);
       $rootScope.menucolor="black";
       $scope.lockProcess();
@@ -2931,7 +2949,7 @@ $scope.malemoves2=[
         price: "3.00",
         finishmessage:"Wow, you destroyed that workout!",
         sharemessage:"Bet you can't beat that! #FitnessChallenge",
-        shareimglink:"img/men1.png",
+        shareimglink:"http://gogatherapp.com/images/men1.png",
         celeb: "Jared Leto, Someone Else",
         type: "Full Body",
         desc: "Designed to transform you into a beast. Prepare to sweat using a combination of high weight high intense work out routines, and multiple reps, the Rock City is for the giant laying inside you.  This Workout is full body muscle generating workout.",
@@ -3212,9 +3230,10 @@ $scope.malemoves2=[
 
 
 //Women or Female Ctrl for all Female Workouts
-.controller('WomenCtrl', function($scope, $state, $rootScope, $ionicScrollDelegate, $ionicSideMenuDelegate) {
+.controller('WomenCtrl', function($scope, $state, $rootScope, $ionicScrollDelegate, $ionicSideMenuDelegate, $ionicLoading) {
 
   $scope.$on('$ionicView.enter', function(){
+      $ionicLoading.hide();
       $ionicSideMenuDelegate.canDragContent(false);
       $scope.lockProcess();
   });
@@ -4812,6 +4831,7 @@ $scope.femalemoves[229]
         title:"Scorn ",
         num: "01",
         price: "3.00",
+        shareimglink:"http://gogatherapp.com/images/womens1.png",
         celeb: "Angelina Jolie, Jennifer Aniston",
         type: "Hey",
         desc: "Prepare yourself to be scorned. Inspired by the fitness and physique of Angelina Jolie. Scorn is a great weight loss workout; idle to getting into Hollywood shape.  This workout is a full body shape contouring workout.",
@@ -4832,6 +4852,7 @@ $scope.femalemoves[229]
         title:"Video Vixen ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens2.png",
         celeb: "Brad Pitt",
         type: "fiction",
         desc: "Curve your body into some of your favorite music artist’s. Video vixen is for those who crave the look of a music video vixen—slim, toned but shapely in all the right places. Inspired by celebrities such as Britney Spears and Jennifer Lopez. Video Vixen creates a body you would want to shake. It is a full body shape-curving workout.",
@@ -4851,6 +4872,7 @@ $scope.femalemoves[229]
         title:"Python ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens3.png",
         celeb: "Nicki Minaj, Blac Chyna",
         type: "fiction",
         desc: "Get ready to curve your body. Inspired by Nikki Minaj’s figure and overall voluptuous lower physique, Python focuses on exercises idle for a broad butt and large thighs yet shapes a thin waist.  This is a lower body and butt workout.",
@@ -4870,6 +4892,7 @@ $scope.femalemoves[229]
         title:"Malibu Athletics ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens4.png",
         celeb: "Chris Pratt, Chris Evans",
         type: "fiction",
         desc: "The skies of Malibu beach see the hottest bodies in the world. Get a body worthy of the place. Inspired by the physique of Kate Hudson, thin, toned, active, and athletic figure is what you can expect when you train with the Malibu Sky workout. This is a full body high intensity workout.",
@@ -4889,6 +4912,7 @@ $scope.femalemoves[229]
         title:"The Country Heart Breaker ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens5.png",
         celeb: "Chris Pratt, Chris Evans",
         type: "fiction",
         desc: "You are sure to break a lot of hearts after completing the Country Heartbreaker Workout. Inspired by the sporty and spritely figure of Taylor Swift, this workout focuses on burning of the pounds with exercises that are sure to make break a sweat. This is a full body workout ideal for the active, world touring artist that you are.",
@@ -4908,6 +4932,7 @@ $scope.femalemoves[229]
         title:"Brazilian Bombshell ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens6.png",
         celeb: "Zac Efron",
         type: "fiction",
         desc: "With some of the most coveted and admired bodies in the world, Brazil is home of the Bombshell. Inspired by so many Brazilian supermodels like Giselle, Lima, and Ambriouso, this workout is ideal to transform you into a bombshell. Brazilian Bombshell is full body workout designed to tone a thin waist and accentuate the posterior, perfectly suited for the beaches of Rio de Janerio",
@@ -4927,6 +4952,7 @@ $scope.femalemoves[229]
         title:"Lipliscious ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens7.png",
         celeb: "Chris Pratt, Chris Evans",
         type: "fiction",
         desc: "You’ll soon be the envy of all your friends after you complete Liplicious. . Inspired by Kylie Jenner and her curvaceous physique, the Liplicious is for the hidden seductress in you. This is a full body workout, focusing on size, shape, and curves. It will soon shape you into curvaceous, liplicious body of your dreams.",
@@ -4946,6 +4972,7 @@ $scope.femalemoves[229]
         title:"Viva Glam ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens8.png",
         celeb: "Chris Pratt, Chris Evans",
         type: "fiction",
         desc: "Inspired by Kelly Ripa’s physqie, Viva Glam wants you too to be able handle the challenges of being a modern women: work, fun, and motherhood. Her body has to be able to handle the demands of a full, taxing and demanding life",
@@ -4965,6 +4992,7 @@ $scope.femalemoves[229]
         title:"XOXO ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens9.png",
         celeb: "Chris Pratt, Chris Evans",
         type: "fiction",
         desc: "You’ll be sure to love all the attention and affection you will receive after a few sessions of XOXO. It is intended curve your body into volumptious figure. Inspired by the physique of Kloe Kardashian. This workout is full body shaping workout. After this your wont be able to resist themselves. Luck you!! ",
@@ -4984,6 +5012,7 @@ $scope.femalemoves[229]
         title:"Keeping Up With The Curves ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens10.png",
         celeb: "Chris Pratt, Chris Evans",
         type: "fiction",
         desc: "NEW So please continue to use {{choice.title}} this workout to get to your fitness goals. Thanks :)",
@@ -5003,6 +5032,7 @@ $scope.femalemoves[229]
         title:"Her Majesty, The Queen ",
         num:"02",
         price: "4.00",
+        shareimglink:"http://gogatherapp.com/images/womens11.png",
         celeb: "Beyonce, Madonna",
         type: "fiction",
         desc: "Bow your head! Lower your gaze. You are about to be in the presence of supreme royalty. Inspired by the physique and figure of Beyoncé, the Queen of Music. Focusing on high-energy exercises ideal for burning excess weight and reshaping your body into a performing superstar. This is a full body high intensity workout intended to make you sweat",
@@ -5533,26 +5563,38 @@ $scope.muteMe=function(){
 
 
   function getBase64Image(url) {
-    var image = new Image();
-    image.setAttribute('crossOrigin', 'anonymous');
-    image.onload = function(e) {
-      var canvas = document.createElement('canvas');
-      var ctx = canvas.getContext("2d");
-      canvas.width = this.width;
-      canvas.height = this.height;
-      ctx.drawImage(image, 0, 0, image.width, image.height);
-      console.log(canvas.toDataURL());
-      return(canvas.toDataURL());
+    var img = new Image();
+
+    img.setAttribute('crossOrigin', 'anonymous');
+
+    img.onload = function () {
+        var canvas = document.createElement("canvas");
+        canvas.width =this.width;
+        canvas.height =this.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(this, 0, 0);
+
+        var dataURL = canvas.toDataURL("image/png");
+
+        var url= dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     };
-    image.src = url;
+
+    img.src = url;
+    return url;
   }
 
 
   $scope.shareNative=function(text,image,link){
 
+     // var imgurl = getBase64Image(image);
+     // console.log("image========>" + image);
+     // console.log("link========>" + imgurl);
+     
      $ionicPlatform.ready(function() {
         $ionicLoading.show({ template: spinner + 'Connectting to Instagram...' });
-        $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, image, null).then(function(result) {
+        //com.burbn.instagram.shareextension
+        $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, null, image, null).then(function(result) {
           // Success!
           $ionicLoading.hide();
           console.log("Instagram success");
@@ -6180,24 +6222,18 @@ $rootScope.pushnow = function(cal,title,time,type) {
 
     $scope.clearnow = function() {
 
-            $scope.testtable = [[65,55,75,80,35,70,65,55,75,80,35,70]];
-            $scope.labels=['Jan 19th','Feb 3rd','Feb 28th','Mar 27th','Apr 10th','Aug 20th','Jan 19th','Feb 3rd','Feb 28th','Mar 27th','Apr 10th','Aug 20th'];
-            $ionicScrollDelegate.resize();
-            $scope.historyworkouts=[
-            {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"},
-            {"title":"Rock City","cal":"50","time":8,"date":"Mar 9","type":"Full Body"},
-            {"title":"Rock City","cal":"70","time":8,"date":"Dec 18","type":"Full Body"},
-            {"title":"Rock City","cal":"30","time":8,"date":"Feb 9","type":"Full Body"},
-            {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"},
-            {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"},
-            {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"},
-            {"title":"Rock City","cal":"70","time":8,"date":"Feb 9","type":"Full Body"}
-            ];
-
+            $scope.testtable[0] = [];
+            $scope.labels=[];            
+            $scope.historyworkouts=[];
+            $scope.data = [];
             $scope.startedontext="Haven't Started";
+            $ionicScrollDelegate.resize();
+            
 /////////////Added by Ai. history update/////////////////////////////////
             $rootScope.loginData.historyofworkouts = $scope.historyworkouts;
             console.log($rootScope.loginData);
+            $state.reload('state',{reload:true});
+            $window.location.reload(true);
             if ($rootScope.bLoginStatus && $rootScope.loginData.email.length>0)
               $rootScope.serverConnectAWS("update", $rootScope.loginData);
 
