@@ -14,8 +14,8 @@ angular.module('starter.controllers', [])
   // Form data for the login modal
   $rootScope.loginData = {fname:"",lname:"",weight:"",age:"",gender:"female",color:"#00a6f5", image:"img/1fb-01.png"};
   $rootScope.menucolor="black";//come and change to white later
-  $rootScope.loginData.email = "zhengcheng@outlook.com";
-  $rootScope.loginData.password = "a";
+  $rootScope.loginData.email = "";//zhengcheng@outlook.com
+  $rootScope.loginData.password = "";//a
   //backend server url
   $rootScope.url = "http://ec2-54-144-105-136.compute-1.amazonaws.com:3000/";//"http://192.168.0.125:3000/"
   $rootScope.bLoginStatus = false;
@@ -38,17 +38,33 @@ angular.module('starter.controllers', [])
   });
 
   $scope.goHistory = function() {
-
     if ($rootScope.loginData.isPremiumUser) {
       $state.go('app.history');
     }
     else {
       $rootScope.confirmAlert("Upgrade Primium User.", "OK");
-    }
-
-    
+    }    
   }
 
+  $scope.goProfile = function() {
+    $state.go('app.profile');
+  }
+
+  $scope.goSetting = function() {
+    $state.go('app.settings');
+  }
+
+  $scope.goPremiumpage = function() {
+    $state.go('app.premiumpage');
+  }
+
+  $scope.goToc = function() {
+    $state.go('app.toc');
+  }
+
+  $scope.goPrivacy = function() {
+    $state.go('app.privacy');
+  }
 
   $rootScope.serverConnectAWS = function(mode, user, callback) {
     var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
@@ -118,14 +134,15 @@ angular.module('starter.controllers', [])
             
       case 'signup':
           var data = {'email' : user.email, 'password' : user.pwd};
-
+          $ionicLoading.show({ template: spinner + 'Loading Products...' });
           $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {     
             var msg = res.data.msg;
             if(msg == 'success') {
+              $ionicLoading.hide();
               $scope.confirmAlert("This Email have already registered.", "RETRY");
               return null;              
             } else {
-              $ionicLoading.show({ template: spinner + 'Loading Products...' });
+              
               $http.post($rootScope.url + 'users',  user).then(function (res) {
                 $ionicLoading.hide();     
                 if(res.data.msg == 'success') {
@@ -148,7 +165,15 @@ angular.module('starter.controllers', [])
                 });
               });
             }
-          });          
+          })
+          .catch(function (err) {
+            $ionicLoading.hide();
+            $ionicPopup.alert({
+              title: 'Error',
+              template: 'Network can not connect to server.'
+            });
+          });   
+
           break;
             
       case 'update': 
@@ -179,6 +204,7 @@ angular.module('starter.controllers', [])
                 } else {
                     $rootScope.confirmAlert(msg, "RETRY");
                 }
+                callback(res);
               });
           }
           
@@ -301,7 +327,12 @@ angular.module('starter.controllers', [])
         pwd = $rootScope.loginData.password;
     
   //      console.log("user:"+ email);//+JSON.stringify($rootScope.loginData));
-    if (email != "" && pwd != "") {
+    if ($rootScope.loginData.email == "") {
+        $rootScope.confirmAlert("Please input eMail!", "RETRY");
+    } 
+    else if ($rootScope.loginData.password == ""){
+        $rootScope.confirmAlert("Please input password!", "RETRY");
+    } else if (email != "" && pwd != "") {
       
       // var savedUser = window.localStorage.getItem(email);
       // //console.log("login:"+savedUser);
@@ -644,7 +675,9 @@ $rootScope.genderchanger=function(){
    $rootScope.subLogin = function() {
     if($rootScope.loginData.fname!="" && $rootScope.loginData.lname!="" && $rootScope.loginData.weight!="" && $rootScope.loginData.age!=""){
         // if($scope.loginData.age[0]) {
-      $rootScope.serverConnectAWS("update", $rootScope.loginData);     
+      $rootScope.serverConnectAWS("update", $rootScope.loginData);
+      $rootScope.closedLogin();
+         
     }
     else{
       var missingaudiochoice = new Audio(missingaudio[Math.floor(Math.random() * missingaudio.length)]);
@@ -777,7 +810,7 @@ $scope.saveLogin = function() {
         console.log($rootScope.bLoginStatus);
 
       $rootScope.serverConnectAWS("update", $rootScope.loginData);      
-
+      $state.go('app.browse');
       //$scope.saveAlert();
     }
     else{
@@ -948,7 +981,11 @@ $scope.sendFeedback=function(){
    });
 }
 
-
+$scope.logout = function() {
+  $rootScope.loginData.email = "";
+  $rootScope.loginData.password = "";
+  $rootScope.loginData.repassword = "";
+}
 
   $scope.shareApp=function(){
 
@@ -5444,8 +5481,9 @@ $scope.muteMe=function(){
 
 
 
-.controller('QuoteCtrl', function($scope, $state, $rootScope, $stateParams,$timeout, $ionicPlatform, $cordovaInstagram, $cordovaSocialSharing, $cordovaGoogleAnalytics) {
+.controller('QuoteCtrl', function($scope, $state, $rootScope, $stateParams,$timeout, $ionicPlatform, $ionicLoading, $cordovaInstagram, $cordovaSocialSharing, $cordovaGoogleAnalytics) {
     
+    var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
 
       $scope.ctrlCheck="This is the QUOTE Ctrl";
       $scope.tmbc="nothing changed again!";
@@ -5513,13 +5551,22 @@ $scope.muteMe=function(){
   $scope.shareNative=function(text,image,link){
 
      $ionicPlatform.ready(function() {
-
+        $ionicLoading.show({ template: spinner + 'Connectting to Instagram...' });
         $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, image, null).then(function(result) {
           // Success!
+          $ionicLoading.hide();
           console.log("Instagram success");
         }, function(err) {
           // An error occurred. Show a message to the user
+          $ionicLoading.hide();
           console.log("Instagram share did not work");
+        })
+        .catch(function (err) {
+          $ionicLoading.hide();
+          $ionicPopup.alert({
+            title: 'Error',
+            template: 'Instagram share did not work.'
+          });
         });
 
       
@@ -5535,11 +5582,13 @@ $scope.muteMe=function(){
 
     $ionicPlatform.ready(function() {
         // Vibrate 2000ms
-
+      $ionicLoading.show({ template: spinner + 'Connectting to Facebook...' });
       $cordovaSocialSharing.shareViaFacebook(text, imagelink,"http://www.gogatherapp.com").then(function(result) {
         // Success!
+        $ionicLoading.hide();
         console.log("FB success");
       }, function(err) {
+        $ionicLoading.hide();
         // An error occurred. Show a message to the user
         console.log("Facebook share did not work");
       });
@@ -5552,11 +5601,13 @@ $scope.muteMe=function(){
 
   $ionicPlatform.ready(function() {
       // Vibrate 2000ms
-
+    $ionicLoading.show({ template: spinner + 'Connectting to Twitter...' });
     $cordovaSocialSharing.shareViaTwitter(text, imagelink, "http://www.gogatherapp.com").then(function(result) {
       // Success!
+      $ionicLoading.hide();
       console.log("Twitter Success");
     }, function(err) {
+      $ionicLoading.hide();
       // An error occurred. Show a message to the user
       console.log("Twitter share did not work");
     });
@@ -5611,8 +5662,8 @@ $scope.muteMe=function(){
 
 
 
-.controller('ResultsCtrl', function($scope, $state, $stateParams, $ionicHistory, $rootScope, $filter, $ionicPlatform, $timeout, $cordovaSocialSharing) {
-  
+.controller('ResultsCtrl', function($scope, $state, $stateParams, $ionicHistory, $rootScope, $filter, $ionicLoading, $ionicPlatform, $timeout, $cordovaSocialSharing) {
+  var spinner = '<ion-spinner icon="spiral" class="spinner-stable"></ion-spinner><br/>';
   $scope.sbmes="visible";
   $rootScope.firsttime=1;
   $scope.tmbc="nothing changed";
@@ -5652,12 +5703,14 @@ $scope.muteMe=function(){
   $scope.shareInstagramBtn=function(text,imagelink){
     $ionicPlatform.ready(function() {
 
-        
-      $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, imagelink, null).then(function(result) {
+      $ionicLoading.show({ template: spinner + 'Connectting to Instagram...' });
+      $cordovaSocialSharing.shareVia("Instagram",text, imagelink, null).then(function(result) {
           // Success!
+          $ionicLoading.hide();
           console.log("Instagram success");
         }, function(err) {
           // An error occurred. Show a message to the user
+          $ionicLoading.hide();
           console.log("Instagram share did not work");
         });
      })
@@ -5668,12 +5721,14 @@ $scope.muteMe=function(){
 
     $ionicPlatform.ready(function() {
       // Vibrate 2000ms
-
+      $ionicLoading.show({ template: spinner + 'Connectting to Facebook...' });
       $cordovaSocialSharing.shareViaFacebook(text, imagelink,null).then(function(result) {
         // Success!
+        $ionicLoading.hide();
         console.log("FB success");
       }, function(err) {
         // An error occurred. Show a message to the user
+        $ionicLoading.hide();
         console.log("Facebook share did not work");
       });
  
@@ -5684,12 +5739,14 @@ $scope.muteMe=function(){
 
   $ionicPlatform.ready(function() {
       // Vibrate 2000ms
-
+    $ionicLoading.show({ template: spinner + 'Connectting to Twitter...' });
     $cordovaSocialSharing.shareViaTwitter("Twitter works now", imagelink, "http://www.gogatherapp.com").then(function(result) {
       // Success!
+      $ionicLoading.hide();
       console.log("Twitter Success");
     }, function(err) {
       // An error occurred. Show a message to the user
+      $ionicLoading.hide();
       console.log("Twitter share did not work");
     });
 
