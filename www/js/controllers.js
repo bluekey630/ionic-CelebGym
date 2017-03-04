@@ -17,11 +17,11 @@ angular.module('starter.controllers', [])
   $rootScope.loginData.email = "";//zhengcheng@outlook.com
   $rootScope.loginData.password = "";//a
   //backend server url
-  $rootScope.url = "http://ec2-54-144-105-136.compute-1.amazonaws.com:3000/";//"http://192.168.0.125:3000/"
+  $rootScope.url = "http://ec2-54-144-105-136.compute-1.amazonaws.com:3000/";//""http://192.168.0.125:3000/
   $rootScope.bLoginStatus = false;
   $rootScope.loginData.enabledPromocode = false;
   $rootScope.loginData.isPremiumUser = false;
-  
+  $rootScope.currentScope = false;
   // Create the login modal that we will use later
 
   $scope.lockimage = "img/unlock.png";
@@ -134,7 +134,7 @@ angular.module('starter.controllers', [])
           break;    
             
       case 'signup':
-          var data = {'email' : user.email, 'password' : user.pwd};
+          var data = {'email' : user.email, 'password' : user.password};
           $ionicLoading.show({ template: spinner + 'Loading Products...' });
           $http.post($rootScope.url + 'confirmuser',  user).then(function (res) {     
             var msg = res.data.msg;
@@ -144,11 +144,12 @@ angular.module('starter.controllers', [])
               return null;              
             } else {
               
-              $http.post($rootScope.url + 'users',  user).then(function (res) {
+              $http.post($rootScope.url + 'users', data).then(function (res) {
                 $ionicLoading.hide();     
                 if(res.data.msg == 'success') {
                   console.log(res.data.item);
-                  //$rootScope.loginData = JSON.parse(res.data.item);
+                  $rootScope.bLoginStatus = true;
+                  $rootScope.loginData = JSON.parse(res.data.item);
                   $rootScope.loginData.weight = parseInt($rootScope.loginData.weight)||0;
                   $rootScope.loginData.age = parseInt($rootScope.loginData.age)||0;
                   console.log($rootScope.loginData);
@@ -214,14 +215,22 @@ angular.module('starter.controllers', [])
           if ($rootScope.bLoginStatus && 
             $rootScope.loginData.email &&   
             $rootScope.loginData.email.length > 0) {
-              $http.get($rootScope.url + 'incpcode' + user._id).then(function (res) {                  
+              $http.get($rootScope.url + 'incpcode/' + user).then(function (res) {                  
 
               });
           }
           break;
             
-      case 'delete': 
-          
+      case 'paystatus': 
+          if ($rootScope.bLoginStatus && 
+            $rootScope.loginData.email &&   
+            $rootScope.loginData.email.length > 0) {
+              $http.get($rootScope.url + 'paystatus/' + user._id).then(function (res) {                  
+                if(res.data.msg == 'success') {
+                  console.log(res.data.item);
+                }
+              });
+          }
           break;
             
       default: break
@@ -300,17 +309,29 @@ angular.module('starter.controllers', [])
 
 //Start Controller -Choose Login/Sign Up Screens
 
-.controller('StartCtrl', function($scope, $state, $ionicSideMenuDelegate) {
+.controller('StartCtrl', function($scope, $state, $ionicSideMenuDelegate, $rootScope) {
 
   $ionicSideMenuDelegate.canDragContent(false)
 
 
   $scope.gotologin = function() {
-      $state.go('app.loginscreen');
+    /*if ($rootScope.loginData.email != undefined)
+      $rootScope.loginData.email = "";
+    if ($rootScope.loginData.password != undefined)
+      $rootScope.loginData.password = "";
+    if ($rootScope.loginData.repassword != undefined)
+      $repassword.loginData.repassword = "";*/
+    $state.go('app.loginscreen');
   };
 
    $scope.gotosignup = function() {
-      $state.go('app.signupscreen');
+    /*if ($rootScope.loginData.email != undefined)
+      $rootScope.loginData.email = "";
+    if ($rootScope.loginData.password != undefined)
+      $rootScope.loginData.password = "";
+    if ($rootScope.loginData.repassword != undefined)
+      $repassword.loginData.repassword = "";*/
+    $state.go('app.signupscreen');
   };
 
 
@@ -684,6 +705,8 @@ $rootScope.genderchanger=function(){
    $rootScope.subLogin = function() {
     if($rootScope.loginData.fname!="" && $rootScope.loginData.lname!="" && $rootScope.loginData.weight!="" && $rootScope.loginData.age!=""){
         // if($scope.loginData.age[0]) {
+      console.log("AAAAAAAAAAA");
+      console.log("fname:" + $rootScope.loginData.fname + "lname" + $rootScope.loginData.lname);
       $rootScope.serverConnectAWS("update", $rootScope.loginData);
       $rootScope.closedLogin();
          
@@ -706,7 +729,7 @@ $rootScope.genderchanger=function(){
           //   $scope.modal2.show();
           // }, 500);
 
-
+      console.log("BBBBBBBBBBBB");
       $scope.saveAlert();
     }
     else{
@@ -996,6 +1019,12 @@ $scope.logout = function() {
   $rootScope.loginData.repassword = "";
 }
 
+$scope.cancelSubscription = function() {
+
+  $rootScope.loginData.isPremiumUser = false;
+  $rootScope.serverConnectAWS("update", $rootScope.loginData);      
+  $state.go('app.browse');
+}
   $scope.shareApp=function(){
 
   $ionicPlatform.ready(function() {
@@ -1032,15 +1061,18 @@ $scope.logout = function() {
   $rootScope.promo = {codetry:""};
 
   $scope.premium=function(){
-
     $state.go('app.pricepage');
-
-      
   }
 
   $scope.price=6.99;
   if ($rootScope.loginData.enabledPromocode) {
     $scope.price = 4.99;
+  }
+
+  if($rootScope.loginData.isPremiumUser == true) {
+    $scope.acceptbtn = false;
+  } else {
+    $scope.acceptbtn = true;
   }
 
   $scope.errormessage="";
@@ -1195,9 +1227,11 @@ $scope.logout = function() {
         // });
         console.log('consume done!');
         $rootScope.loginData.isPremiumUser = true;
+        $scope.acceptbtn = false;
         if ($rootScope.loginData.email.length>0 && $rootScope.bLoginStatus) {
-          $rootScope.serverConnectAWS("update", $rootScope.loginData);                      
+          $rootScope.serverConnectAWS("paystatus", $rootScope.loginData);                      
         }
+        $scope.acceptbtn = false;
         $ionicLoading.hide();
       })
       .catch(function (err) {
@@ -1425,11 +1459,16 @@ $scope.goDetails = function() {
 
   if ($rootScope.choice.title === $scope.mwd.w1.title || $rootScope.choice.title === $scope.mwd.w2.title)
   {
+    
+    $rootScope.currentScope = true;
     $state.go('app.details');
+
+
   }
   else {
     if ($rootScope.loginData.isPremiumUser)
     {
+      $rootScope.currentScope = true;
       $state.go('app.details');
     } else {
       $rootScope.confirmAlert("You are not PremiumUser.","OK");
@@ -3314,11 +3353,13 @@ $scope.malemoves2=[
 
     if ($rootScope.choice.title === $scope.fwd.f1.title || $rootScope.choice.title === $scope.fwd.f2.title)
     {
+      $rootScope.currentScope = true;
       $state.go('app.details');
     }
     else {
       if ($rootScope.loginData.isPremiumUser)
       {
+        $rootScope.currentScope = true;
         $state.go('app.details');
       } else {
         $rootScope.confirmAlert("You are not PremiumUser.","OK");
@@ -5089,7 +5130,70 @@ $scope.femalemoves[229]
 
 
 
-.controller('DetailsCtrl', function($scope, $ionicModal, $rootScope, $ionicLoading, $ionicScrollDelegate, $ionicSideMenuDelegate) {
+.controller('DetailsCtrl', function($scope,$state,$timeout, $ionicModal, $rootScope, $ionicLoading, $ionicScrollDelegate, $ionicSideMenuDelegate, $ionicHistory,  $ionicPlatform) {
+    //Store targetScope to global each time the view is changing
+    
+ // // $scope.$on('$ionicView.enter', function(){
+ //      $rootScope.isDetailsCtrl = true;
+ // //     console.log("dddddddd");
+ // // });
+    
+  
+ //    var defaultGoBack = $rootScope.$ionicGoBack;
+ //    $rootScope.$ionicGoBack = function(){
+ //      if($rootScope.isDetailsCtrl){
+ //        $state.go('app.browse'); 
+ //        $rootScope.isDetailsCtrl = false;       
+ //      }
+ //      else
+ //        defaultGoBack();
+ //      //$rootScope.isDetailsCtrl = false;
+ //    }
+  //$rootScope.currentScope = true;
+
+  $scope.$on('$ionicView.enter', function(){
+      console.log("Enter DetailsCtrl.")
+      $rootScope.currentScope = true;
+  });
+  
+  $scope.$on('$ionicView.leave', function(){
+      console.log("Leave DetailsCtrl.")
+  });
+
+    // $rootScope.$on( '$ionicView.Enter', function( event ) {
+        
+    // });
+    
+    var defaultGoBack = $rootScope.$ionicGoBack;
+
+    $rootScope.$ionicGoBack = function() {
+        if ( $rootScope.currentScope ) {
+
+            //assign default go back function to as a "super" function ^^
+            //currentScope.customGoBack.super = defaultGoBack;
+
+            //if there is a custom back function, execute-it
+            console.log("custom GoBack");
+            $rootScope.currentScope = false;
+            $scope.customGoBack();
+            
+
+        } else {
+
+            console.log("Default GoBack");
+            defaultGoBack();
+        }
+    };
+
+    
+   
+
+    $scope.customGoBack = function() {
+      $ionicHistory.nextViewOptions({
+        disableBack: true
+      });
+      $state.go('app.browse');
+    }
 
     $scope.zeroOut=function(){
        $rootScope.totalcalc=0;
@@ -5104,7 +5208,7 @@ $scope.femalemoves[229]
     $scope.choosen = function(selectedChoose) {
       $ionicScrollDelegate.resize();
       $rootScope.diff = selectedChoose;
-      console.log("selectedChoose");
+      console.log("selectedChoose122");
       
     }
 
@@ -5162,6 +5266,7 @@ $scope.femalemoves[229]
         if($scope.count<1){
           $timeout.cancel(counttimeout);
           $scope.count="";
+          $rootScope.currentScope = false;
           $state.go('app.workout');
         }
 
@@ -5744,9 +5849,9 @@ $scope.muteMe=function(){
 
   $scope.shareInstagramBtn=function(text,imagelink){
     $ionicPlatform.ready(function() {
-
+      console.log("link========>" + imagelink);                                                                                                                                        
       $ionicLoading.show({ template: spinner + 'Connectting to Instagram...' });
-      $cordovaSocialSharing.shareVia("Instagram",text, imagelink, null).then(function(result) {
+      $cordovaSocialSharing.shareVia("com.burbn.instagram.shareextension",text, null, imagelink, null).then(function(result) {
           // Success!
           $ionicLoading.hide();
           console.log("Instagram success");

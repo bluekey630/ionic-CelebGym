@@ -27,15 +27,14 @@ angular.module('starter', ['ionic', 'starter.controllers','starter.filters','cha
     }
     
     if(typeof analytics !== undefined) {
-        console.log(analytics);
-        analytics.startTrackerWithId("UA-91977093-1"); // you must insert your UA code.(UA-91977093-1)
+        //console.log(analytics);
+        //analytics.startTrackerWithId("UA-91977093-1"); // you must insert your UA code.(UA-91977093-1)
         //analytics.tracView("whatever");
 
         console.log("starting analytics");
     } else {
         console.log("Google Analytics Unavailable");
     }
-    
     
   });
 })
